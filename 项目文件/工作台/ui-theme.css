@@ -1,0 +1,32 @@
+/* Shared product UI tokens, excluded from video scene documents. */
+:root {
+  color-scheme: dark;
+  --ui-bg: #111214;
+  --ui-surface: #1a1c20;
+  --ui-surface-raised: #22252a;
+  --ui-control: #26292f;
+  --ui-input: #141619;
+  --ui-hover: #30343c;
+  --ui-border: #343840;
+  --ui-border-subtle: #292c32;
+  --ui-text: #e9ecf1;
+  --ui-muted: #a2a8b3;
+  --ui-accent: #9dbbfa;
+  --ui-accent-hover: #bad0ff;
+  --ui-accent-soft: #2b3548;
+  --ui-on-accent: #15223a;
+  --ui-danger: #e6a7aa;
+  --ui-danger-soft: #39292e;
+  --ui-success: #a0c8b3;
+  --ui-video: #344258;
+  --ui-video-border: #596d8c;
+  --ui-audio: #2c413b;
+  --ui-audio-border: #527668;
+  --ui-lyric: #403b4d;
+  --ui-lyric-border: #736780;
+  --ui-wave: #a0c8b3;
+  --ui-monitor: #0a0b0d;
+  --ui-shadow: 0 20px 70px #0008;
+  --ui-font: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  --ui-mono: Consolas, "Microsoft YaHei UI", monospace;
+}

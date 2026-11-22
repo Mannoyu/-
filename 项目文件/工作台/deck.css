@@ -1,0 +1,40 @@
+#deck{position:relative;width:100%;aspect-ratio:600/414}
+.wallCard{position:absolute;inset:0;border-radius:18px;transform-origin:50% 85%;backface-visibility:hidden;will-change:transform,opacity;background:linear-gradient(120deg,#8a8294,#484253 14%,#252335 58%,#666571);border:1px solid #d3c8dc9c}
+.wallCard:before{content:"";position:absolute;inset:3px;border:1px solid #beb4ce66;border-radius:14px;box-shadow:0 1px 0 #02090c70,inset 0 1px 0 #e8e0ef30;pointer-events:none}
+.cardSurface{position:absolute;inset:7px 7px 40px;overflow:hidden;border-radius:10px 10px 3px 3px;isolation:isolate;background:#111c22;box-shadow:0 0 0 1px #171621,0 1px 0 1px #c4bace36}
+.cardInfo{position:absolute;left:18px;right:18px;bottom:1px;height:38px;display:flex;align-items:center;gap:14px;color:#d6cfdf}
+.cardNumber{font:600 17px/1 Georgia,serif;letter-spacing:.5px;color:#d7cbdf;font-variant-numeric:tabular-nums}
+.cardDiamond{width:5px;height:5px;border:1px solid #b1a1c47a;transform:rotate(45deg);margin-right:1px}
+.cardSceneName{flex:1;min-width:0;padding-left:15px;border-left:1px solid #aab2ce2e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 10px/1.2 "Microsoft YaHei",sans-serif;letter-spacing:2px;color:#c6bdd4}
+.cardCollection{font:600 9px/1.2 "Microsoft YaHei",sans-serif;letter-spacing:1.7px;color:#aaa6b8;white-space:nowrap}
+.cardSurface:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;border:1px solid #a99abc38;box-shadow:inset 0 1px 2px #020a1226}
+.wallCard canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.wallCard .cardShine{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at var(--foil-x,50%) var(--foil-y,30%),#dceae536,transparent 65%);mix-blend-mode:screen}
+.cardReflection{position:absolute;inset:0;pointer-events:none;background:linear-gradient(var(--foil-angle,118deg),transparent 20%,#d8e7e512 43%,#e5f0ec20 48%,transparent 65%);opacity:var(--reflection,.1)}
+.wallCard--frosted{background:#101b26;border-color:#d9eef487}
+.cardFrostedRim{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
+.cardFrostedRim canvas{filter:blur(4px) saturate(.85);transform:scale(1.025)}
+.cardFrostedRim::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(160deg,#c7e4f139 0%,#192b3433 44%,#09141e99 100%);
+  box-shadow:inset 0 0 0 1px #e3f4ff45,inset 0 0 10px #bce5f229;
+}
+.wallCard--frosted::before{z-index:1;border-color:#e4f4ff38;box-shadow:none}
+.wallCard--frosted .cardSurface{box-shadow:0 0 0 1px #d5edf050}
+.wallCard--frosted .cardNumber,.wallCard--frosted .cardSceneName,.wallCard--frosted .cardCollection{
+  color:#edf7fc;text-shadow:0 1px 3px #07121c,0 0 5px #07121c;
+}
+.topline,.lyricLabel,.lyricFoot{display:none}
+footer{justify-content:center}
+.coverFx{display:none}
+.deckNav{display:none}
+.memoryRail{display:flex;gap:14px;width:calc(100% - 8px);margin:30px 4px 0;align-items:center}
+.memoryRail--pair{width:calc((100% - 36px) / 2)}
+.memoryFrame{position:relative;flex:1;aspect-ratio:8/5;border-radius:3px;overflow:hidden;opacity:.43;transform:translateY(4px);box-shadow:0 5px 14px #06131e50,0 0 0 1px #64767966}
+.memoryFrame canvas{display:block;width:100%;height:100%;filter:saturate(.45) brightness(.74)}
+.memoryFrame.isActive{opacity:.85;transform:translateY(-2px);box-shadow:0 6px 18px #06131e60,0 0 0 1px #bac9c1a6}
+.memoryFrame.isActive canvas{filter:saturate(.72) brightness(.9)}
+.memoryFrame i{position:absolute;inset:0;box-shadow:inset 0 0 0 3px #17252c9c;pointer-events:none}
+#deckDots{display:flex;gap:8px}
+.deckDot{height:4px;width:12px;border-radius:3px;background:#ffffff30}
+.deckHint{font-size:11px;letter-spacing:2px;color:#c5d9d06e;margin-left:12px}

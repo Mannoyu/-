@@ -1,0 +1,28 @@
+.lyrics.pv-mode.template-mode{left:var(--template-left);top:var(--template-top);width:var(--template-width)}
+.template-mode .lyricWindow{height:400px;margin-top:0;overflow:visible;mask-image:none}
+.template-mode .pvStage,.template-mode .pvStage *{visibility:hidden!important}
+.template-mode .lyricAura{display:none}
+.templateLyricStage{position:absolute;inset:0;color:#fffaf3}
+.templateLyricStage[hidden]{display:none}
+.templateLyricScene{position:absolute;inset:0;visibility:hidden}
+.templateOriginalBox{position:absolute;inset:0 0 auto;height:var(--template-originalHeight);display:flex;align-items:flex-end}
+.templateOriginal{width:100%;margin:0;font:600 var(--template-original)/1.42 "Microsoft YaHei","PingFang SC",sans-serif;letter-spacing:1px;text-wrap:balance;line-break:strict;word-break:keep-all;overflow-wrap:normal;text-shadow:0 2px 8px #020b15a6}
+.templateClause{white-space:nowrap}.templateSpace{font-size:.45em;letter-spacing:0}
+.templateLatin .templateOriginal{font:500 var(--template-latin)/1.35 Georgia,"Times New Roman",serif;letter-spacing:-1px}
+.templateLyricScene[data-kind="credit"] .templateOriginal{font-size:var(--template-credit);font-weight:400;line-height:1.6;letter-spacing:.5px}
+.templateCaption{position:absolute;left:0;right:0;top:var(--template-translationTop);margin:0;font:400 var(--template-translation)/1.65 "Microsoft YaHei","PingFang SC",sans-serif;letter-spacing:.5px;color:#f1f2eef2;text-wrap:pretty;overflow-wrap:anywhere;text-shadow:0 2px 3px #020b15bf,0 3px 10px #020b1570}
+.templateWord{position:relative;display:inline;color:color-mix(in srgb,var(--accent) 60%,#fffaf3);background:none;font:inherit;white-space:nowrap;text-decoration:none}
+.templateWord:after{content:"";position:absolute;left:0;right:0;bottom:-.08em;height:1px;opacity:var(--template-key-light,.3);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 45%,transparent) 15%,var(--accent) 50%,transparent 90%);background-size:240% 100%;background-position:var(--template-sheen,0%) 0}
+.templateLyricRule{position:absolute;left:0;top:-32px;display:flex;align-items:center;gap:10px;width:100%;height:8px}
+.templateLyricRule i{width:24px;height:2px;background:var(--accent);opacity:.8}
+.templateLyricRule span{width:72px;height:1px;background:#edf2ef4d}
+.templateLyricFoot{position:absolute;left:0;right:0;top:358px;display:flex;align-items:center;height:6px}
+.templateLyricFoot:before{content:"";position:absolute;left:0;right:0;top:2px;height:1px;background:linear-gradient(90deg,#edf2ef26,transparent)}
+.templateLyricFoot i{width:4px;height:4px;flex-shrink:0;border:1px solid var(--accent);transform:rotate(45deg);opacity:.75}
+.templateLyricFoot span{width:112px;height:1px;margin-left:12px;background:var(--accent);opacity:.55;transform-origin:left}
+.templateLyricFoot b{margin-left:auto;width:20px;height:1px;background:#edf2ef4d}
+@media(prefers-reduced-motion:reduce){.templateWord:after{background:var(--accent)}}
+.templateLyricScene[data-align="left"] :is(.templateOriginal,.templateCaption) {text-align:left;}
+.templateLyricScene[data-align="center"] :is(.templateOriginal,.templateCaption) {text-align:center;}
+.templateLyricScene[data-align="right"] :is(.templateOriginal,.templateCaption) {text-align:right;}
+.templateLyricScene[data-effect="fade"] .templateOriginal::after {display:none;}

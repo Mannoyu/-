@@ -1,0 +1,33 @@
+.audition-demo .lyrics,.audition-demo .templateFrame,.audition-demo #world-title{display:none!important}
+.audition-demo #background{filter:saturate(.79) brightness(.91)!important}
+.audition-demo .shade{background:linear-gradient(90deg,#090b150e 0%,#090b1529 38%,#0b0d1ea1 61%,#080c17c2 100%)}
+.audition-demo .vignette{background:linear-gradient(0deg,#060b1680,transparent 26%,transparent 80%,#0b0c1c38)}
+.audition-demo .coverHalo{opacity:.2!important}
+.audition-demo .cardSurface{box-shadow:0 0 0 1px #1b1c23,0 1px 0 1px #e8e1ef25}
+.audition-demo .memoryFrame{opacity:.52}
+.audition-demo .memoryFrame.isActive{opacity:1}
+.audition-demo .memoryFrame.isActive canvas{filter:saturate(.88) brightness(.98)}
+.audition-demo footer{color:#e4e3ea9c}
+.audition-demo .rail{background:#ece5f02b}
+.audition-demo #progressFill{background:var(--accent)}
+.audition-demo #progressFill:after{background:#eeeaf2}
+.audition-field{position:absolute;inset:0 0 0 42%;pointer-events:none;backdrop-filter:blur(1.5px);mask-image:linear-gradient(90deg,transparent,#000 38%);z-index:1}
+.audition-copy{position:absolute;left:53%;top:23%;width:40%;height:530px;z-index:5;color:#f5f2f5;pointer-events:none}
+.audition-song{height:78px;border-top:1px solid #ebe6f133;padding-top:18px;display:flex;align-items:baseline;justify-content:space-between;gap:24px;position:relative}
+.audition-song:before{content:"";position:absolute;left:0;top:-1px;width:38px;height:2px;background:var(--accent)}
+.audition-title{font-size:23px;line-height:1.3;font-weight:500;letter-spacing:.6px;max-width:72%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.audition-artist{font-size:18px;font-weight:400;color:#dfdce4b3;letter-spacing:1px;white-space:nowrap}
+.audition-lines{position:absolute;left:0;right:0;top:110px;height:330px}
+.audition-line{position:absolute;inset:0;visibility:hidden}
+.audition-originalbox{height:188px;display:flex;align-items:center}
+.audition-original{margin:0;width:100%;font:500 53px/1.48 "Microsoft YaHei","Yu Gothic",sans-serif;letter-spacing:1.2px;text-wrap:balance;line-break:strict;overflow-wrap:normal;text-shadow:0 2px 18px #06091870}
+.audition-original .phrase{white-space:nowrap}
+.audition-original .space{font-size:.45em}
+.audition-line.latin .audition-original{font:500 65px/1.3 "Segoe UI","Microsoft YaHei",sans-serif;letter-spacing:-1.6px}
+.audition-original mark{color:color-mix(in srgb,var(--accent) 48%,#fff 52%);background:none;font:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent) 40%,transparent);text-decoration-thickness:1px;text-underline-offset:.2em}
+.audition-caption{position:absolute;top:215px;left:0;right:0;margin:0;color:#eeebf1e8;font:400 34px/1.7 "Microsoft YaHei",sans-serif;letter-spacing:1px;text-wrap:pretty;text-shadow:0 2px 12px #03071390}
+.audition-sound{position:absolute;left:0;right:0;top:467px;height:24px;display:flex;align-items:center;gap:5px;opacity:.65}
+.audition-sound:after{content:"";height:1px;flex:1;margin-left:18px;background:linear-gradient(90deg,#ebe6f126,transparent)}
+.audition-sound i{display:block;flex:0 0 3px;height:24px;border-radius:1px;background:var(--accent);transform-origin:center;will-change:transform}
+.audition-overlay[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.audition-original,.audition-caption{transform:none!important}}

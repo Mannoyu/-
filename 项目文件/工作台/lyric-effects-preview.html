@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>音乐可视化 · 固定模板</title>
+<style>
+:root{color-scheme:dark;--paper:#f3f2ec;--muted:#a5adaf;--accent:#b5dad7;--edge:#ffffff20}
+*{box-sizing:border-box}
+body{margin:0;background:#14191b;color:var(--paper);font-family:"Microsoft YaHei",sans-serif}
+main{width:min(1440px,100%);margin:auto;padding:24px 28px 28px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:18px}
+h1{margin:0;font-size:22px;font-weight:500;letter-spacing:1px}
+header p{margin:0;color:var(--muted);font-size:13px}
+.screen{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#080e12;border:1px solid var(--edge)}
+iframe{display:block;width:1920px;height:1080px;border:0;transform-origin:top left}
+.loading{position:absolute;inset:0;display:grid;place-items:center;background:#10181d;color:var(--muted);font-size:15px}
+.loading[hidden]{display:none}
+.controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:18px}
+button,select{min-height:42px;border:1px solid var(--edge);border-radius:4px;background:#1c2326;color:var(--paper);padding:8px 16px;font:inherit;font-size:13px;cursor:pointer}
+button:hover,select:hover{border-color:#8da9a8;background:#263234}
+button:active{background:#344344}
+button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+button:disabled,input:disabled{opacity:.45;cursor:wait}
+#play{background:var(--accent);border-color:var(--accent);color:#102325;min-width:100px;font-weight:600}
+.timeline{flex:1;min-width:150px;accent-color:var(--accent)}
+output{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:70px}
+.options{margin-left:auto}
+details{margin-top:20px;border-top:1px solid var(--edge);padding-top:14px}
+summary{cursor:pointer;width:max-content;color:var(--muted);font-size:13px}
+.tweaks{display:flex;align-items:center;flex-wrap:wrap;gap:24px;padding-top:18px;font-size:13px;color:var(--muted)}
+.tweaks label{display:flex;align-items:center;gap:12px}
+.tweaks input{accent-color:var(--accent)}
+.note{margin:16px 0 0;color:var(--muted);font-size:12px;line-height:1.7;text-wrap:pretty}
+@media(max-width:650px){main{padding:16px 12px}header{align-items:flex-start;flex-direction:column;gap:6px}h1{font-size:19px}.timeline{flex-basis:60%}.options{margin-left:0}.controls{gap:8px}button{padding:8px 12px}.note{font-size:11px}}
+</style>
+<link rel="stylesheet" href="/project/ui-shell.css">
+</head>
+<body>
+<main>
+  <header><h1>音乐可视化 · 固定模板</h1><p>统一双语字幕 · 完整边框与音乐频谱</p></header>
+  <div class="screen"><iframe title="真实歌曲与字幕预览" src="index.html?presentation=template&amp;lyricFx=contour&amp;w=1920&amp;h=1080"></iframe><div class="loading" role="status">正在载入高清画面与音乐…</div></div>
+  <div class="controls">
+    <button id="play" disabled>播放试听</button>
+    <input id="seek" class="timeline" type="range" min="22" max="31" step="0.0166667" value="22" aria-label="试听进度" disabled>
+    <output id="clock" for="seek">00:22</output>
+    <button class="segment" data-start="22" data-end="31" aria-pressed="true" disabled>普通歌词</button>
+    <button class="segment" data-start="38" data-end="49" aria-pressed="false" disabled>副歌 / Broken Heart</button>
+    <button class="segment" data-start="100.06" data-end="108.34" aria-pressed="false" disabled>宇宙</button>
+    <select id="variant" class="options" aria-label="字幕样式"><option value="template">新版 · 固定模板</option><option value="contour">对照 · 原版描边</option><option value="glow">对照 · 原版流光</option></select>
+  </div>
+  <details><summary>Tweaks</summary><div class="tweaks"><label for="strength">装饰强度<input id="strength" type="range" min="0.6" max="1.4" step="0.1" value="1"><output id="strengthValue">1.0</output></label><label><input id="loop" type="checkbox" checked>循环试听选段</label></div></details>
+  <p class="note">原文统一为一至两行，中文译文固定在下方；关键词保留颜色与细光强调。卡片和缩略图沿用原布局，双层边框与底部频谱随素材主题色切换。可用下拉框对照旧版，Tweaks 可调整装饰强度。</p>
+  <audio id="audio" src="audio/final.wav" preload="auto"></audio>
+</main>
+<script type="module">
+const frame=document.querySelector('iframe'),audio=document.getElementById('audio');
+const play=document.getElementById('play'),seek=document.getElementById('seek'),clock=document.getElementById('clock');
+const variant=document.getElementById('variant'),strength=document.getElementById('strength');
+const segmentButtons=[...document.querySelectorAll('.segment')];
+let start=22,end=31,ready=false,playing=false,time=start,queued=null,drawing=false,animationFrame=0;
+const clockText=value=>`${String(Math.floor(value/60)).padStart(2,'0')}:${String(Math.floor(value%60)).padStart(2,'0')}`;
+function fit(){frame.style.transform=`scale(${frame.parentElement.clientWidth/1920})`;}
+new ResizeObserver(fit).observe(frame.parentElement);
+async function draw(value){
+  queued=value;
+  if(drawing||!ready)return;
+  drawing=true;
+  try{
+    while(queued!==null){
+      const next=queued;queued=null;
+      await frame.contentWindow.render(next);
+    }
+  }catch(error){
+    pause();
+    const message=document.querySelector('.loading');
+    message.hidden=false;message.textContent=`画面暂时无法载入：${error.message}`;
+  }finally{drawing=false;}
+}
+function pause(){playing=false;cancelAnimationFrame(animationFrame);audio.pause();play.textContent='播放试听';}
+function jump(value){
+  time=Math.max(start,Math.min(end,value));
+  audio.currentTime=time;seek.value=String(time);clock.textContent=clockText(time);return draw(time);
+}
+function tick(){
+  if(!playing)return;
+  time=audio.currentTime;
+  if(time>=end){
+    if(document.getElementById('loop').checked){jump(start);}
+    else{pause();jump(end);return;}
+  }else{
+    seek.value=String(time);clock.textContent=clockText(time);draw(time);
+  }
+  animationFrame=requestAnimationFrame(tick);
+}
+play.addEventListener('click',async()=>{
+  if(playing){pause();return;}
+  if(time>=end)await jump(start);
+  try{await audio.play();playing=true;play.textContent='暂停';tick();}
+  catch{play.textContent='点击重试播放';}
+});
+seek.addEventListener('input',()=>{pause();jump(Number(seek.value));});
+segmentButtons.forEach(button=>button.addEventListener('click',()=>{
+  pause();start=Number(button.dataset.start);end=Number(button.dataset.end);
+  seek.min=String(start);seek.max=String(end);
+  segmentButtons.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+  jump(start);
+}));
+function updateStyle(){
+  document.getElementById('strengthValue').textContent=Number(strength.value).toFixed(1);
+  if(!ready)return;
+  frame.contentWindow.setPresentationStyle(variant.value);
+  frame.contentWindow.setLyricEffectStyle(variant.value==='template'?'contour':variant.value,Number(strength.value));
+  frame.contentWindow.setFrameIntensity(Number(strength.value));
+  draw(time);
+}
+variant.addEventListener('change',updateStyle);
+strength.addEventListener('input',updateStyle);
+async function initialize(){
+  if(!frame.contentWindow?.READY||audio.readyState<1){requestAnimationFrame(initialize);return;}
+  ready=true;fit();
+  frame.contentWindow.setPresentationStyle(variant.value);
+  frame.contentWindow.setLyricEffectStyle(variant.value==='template'?'contour':variant.value,Number(strength.value));
+  frame.contentWindow.setFrameIntensity(Number(strength.value));
+  await jump(start);
+  document.querySelector('.loading').hidden=true;
+  play.disabled=false;seek.disabled=false;
+  segmentButtons.forEach(button=>button.disabled=false);
+}
+frame.addEventListener('load',initialize);
+audio.addEventListener('error',()=>{
+  document.querySelector('.loading').hidden=false;
+  document.querySelector('.loading').textContent='音乐载入失败，请刷新页面重试。';
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+fit();
+</script>
+</body>
+</html>

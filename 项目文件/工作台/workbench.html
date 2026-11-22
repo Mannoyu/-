@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>音乐剪辑工作台</title>
+  <link rel="stylesheet" href="/workbench.css">
+</head>
+<body>
+  <header class="toolbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><h1>音乐剪辑工作台</h1></div>
+    <label class="draft-picker">草稿 <select id="drafts"></select></label>
+    <button id="new-draft">新建草稿</button>
+    <p id="status" role="status">正在打开工作台…</p>
+    <button id="guide-open" type="button">使用指南</button>
+    <button id="export-open" class="primary">导出视频</button>
+  </header>
+  <main class="workspace">
+    <div class="studio">
+      <aside class="panel library">
+        <nav class="panel-switch" aria-label="素材区"><button type="button" data-panel="materials" aria-pressed="true">素材</button><button type="button" data-panel="project-settings" aria-pressed="false">项目</button><button type="button" data-panel="template-settings" aria-pressed="false">模板</button></nav>
+        <div id="materials" class="panel-body">
+          <div class="button-row"><button data-import="video">＋ 背景</button><button data-import="audio">＋ 音乐</button></div>
+          <input id="asset-search" type="search" placeholder="搜索素材" aria-label="搜索素材">
+          <div class="asset-filters" aria-label="素材类型"><button data-asset-filter="all" aria-pressed="true">全部</button><button data-asset-filter="video" aria-pressed="false">背景</button><button data-asset-filter="audio" aria-pressed="false">音乐</button></div>
+          <details class="wallpaper"><summary>导入 Wallpaper</summary><button id="wallpaper-folder" type="button">从文件夹提取基础视频</button><button data-import="package">选择场景包（.pkg）</button><button id="capture-open">采集动态效果</button></details>
+          <div class="section-heading"><h2>素材库</h2><span id="asset-count"></span></div>
+          <p class="workbench-hint">拖到时间线空白处添加。选中片段后，可单独替换背景。</p>
+          <ul id="asset-list" aria-label="素材库"></ul>
+          <details id="removed-assets" class="wallpaper" hidden><summary>已移除素材</summary><ul id="removed-list"></ul></details>
+          <details class="wallpaper"><summary>存储清理</summary><p class="workbench-hint">移除的素材仍占空间；在回收区点「永久删除」可释放本地文件。渲染缓存自动限制为 2 GiB，音频缓存为 512 MiB，7 天未使用后清理。成片直接保存在桌面，可自行归档。</p><button id="storage-clean" type="button">立即清理渲染缓存</button></details>
+        </div>
+        <div id="project-settings" class="panel-body" hidden>
+        <label>草稿名称<input id="draft-name" maxlength="100"></label>
+        <label>歌名<input id="song-name" maxlength="100"></label>
+        <label>歌手<input id="artist" maxlength="100"></label>
+        <label>音乐轨道<select id="audio-choice"></select></label>
+        </div>
+        <div id="template-settings" class="panel-body" hidden>
+        <label>模板<select id="templates"></select></label>
+        <p class="workbench-hint">模板可保存版式、字幕样式和背景配置。套用后仍可在素材库替换背景。</p>
+        <button id="template-backgrounds" type="button">去素材库换背景</button>
+        <div class="button-row"><button id="template-preview">预览</button><button id="template-apply">套用</button></div>
+        <button id="template-save">另存模板</button>
+        <label class="inline-check"><input id="template-include-backgrounds" type="checkbox">另存时包含当前背景</label>
+        <button id="return-draft" hidden>返回草稿画面</button>
+        </div>
+      </aside>
+      <section class="panel monitor" id="monitor" aria-label="画面预览">
+        <div class="monitor-head"><strong id="preview-title">画面预览</strong><div class="monitor-actions"><span>1080p / 60 fps</span><button id="fullscreen" type="button" hidden>全屏</button></div></div>
+        <div class="monitor-well"><div id="monitor-surface"><iframe id="preview" title="视频画面"></iframe><div id="card-drag" role="button" tabindex="0" aria-label="拖动调整当前片段的卡片位置" hidden><span>拖动卡片</span></div></div></div>
+        <div class="transport">
+          <div class="play-controls">
+            <button id="previous-frame" type="button" aria-label="上一帧" title="上一帧">‹</button>
+            <button id="play" type="button" aria-label="播放" title="播放 / 暂停（空格）">▶</button>
+            <button id="next-frame" type="button" aria-label="下一帧" title="下一帧">›</button>
+          </div>
+          <output id="clock">00:00.00</output>
+          <input id="scrub" type="range" aria-label="播放位置" value="0" min="0" max="1" step="0.0166667">
+          <span id="duration"></span>
+          <span id="preview-quality" title="播放使用视频解码，暂停按导出的源帧核对">源帧核对</span>
+        </div>
+        <audio id="audio" preload="auto"></audio>
+      </section>
+      <aside class="panel inspector">
+        <nav class="panel-switch" aria-label="属性区"><button type="button" data-panel="background-settings" aria-pressed="true">背景</button><button type="button" data-panel="lyric-settings" aria-pressed="false">字幕</button><button type="button" data-panel="layout-settings" aria-pressed="false">布局</button></nav>
+        <div id="background-settings" class="panel-body">
+          <label>所选片段<select id="slots"></select></label>
+          <div id="clip-fields">
+          <div class="section-heading"><h2>时间线位置</h2><span id="clip-end-label"></span></div>
+          <div class="field-pair"><label>开始时间（秒）<input id="clip-start" type="number" min="0" max="3600" step="0.0166667"></label><label>持续时长（秒）<input id="clip-duration" type="number" min="0.0166667" max="3600" step="0.0166667"></label></div>
+          <label>背景素材<select id="backgrounds"></select></label>
+          <div class="button-row"><button id="background-import" type="button">导入并替换</button><button id="background-rename" type="button">重命名素材</button></div>
+          <div class="field-pair"><label>取景位置<input id="focus" type="range" min="0" max="1" step="0.01"></label><label>缩放<input id="zoom" type="number" min="1" max="3" step="0.05"></label></div>
+          <div class="field-pair"><label>素材入点（秒）<input id="trim-start" type="number" min="0" step="0.01"></label><label>素材出点（秒）<input id="trim-end" type="number" min="0" step="0.01"></label></div>
+          <p class="workbench-hint">素材不足时循环播放。删除片段保留空白，音乐与字幕不移动。</p>
+          <div class="section-heading"><h2>所选片段的卡片</h2></div>
+          <div class="field-pair"><label>横向位置<input id="clip-card-x" type="number" min="-500" max="500"></label><label>纵向位置<input id="clip-card-y" type="number" min="-500" max="500"></label><label>卡片大小<input id="clip-card-scale" type="number" min="0.5" max="1.5" step="0.05"></label><label>切换效果<select id="clip-transition"><option value="0">直接切换</option><option value="1.2">卡片转场 · 1.2 秒</option></select></label></div>
+          <button id="clip-delete-property" class="danger" type="button">删除此片段</button>
+          </div>
+          <p id="clip-empty" class="empty-state" hidden>此处没有背景。点击左侧素材的「添加」填入空白。</p>
+        </div>
+        <div id="layout-settings" class="panel-body" hidden><div id="layout" class="field-pair"></div></div>
+        <div id="lyric-settings" class="panel-body" hidden>
+          <div class="button-row"><button id="add-lyric">在播放头加一句</button><button id="lrc-open">导入 LRC</button></div>
+          <label>编辑范围<select id="lyric-choice"></select></label>
+          <div id="lyric-fields" hidden>
+            <div class="field-pair"><label>开始（秒）<input id="lyric-time" type="number" min="0" step="0.01"></label><label>结束（秒）<input id="lyric-end" type="number" min="0" step="0.01"></label></div>
+            <label>原文<textarea id="lyric-text" rows="2"></textarea></label>
+            <label>译文<textarea id="translation" rows="2"></textarea></label>
+            <label>重点词（用顿号隔开）<input id="emphasis"></label>
+            <button id="remove-lyric">移除此句</button>
+          </div>
+          <div class="field-pair"><label>字号<input id="font-size" type="number" min="22" max="130" placeholder="随模板"></label><label>对齐<select id="lyric-align"><option value="">随模板</option><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select></label></div>
+          <label>入场<select id="lyric-effect"><option value="default">随模板</option><option value="fade">轻淡入</option><option value="rise">上浮淡入</option></select></label>
+        </div>
+      </aside>
+    </div>
+    <div id="timeline-resize" role="separator" tabindex="0" aria-label="调整时间线高度" aria-orientation="horizontal"></div>
+    <section class="panel timeline" aria-label="时间线">
+      <div class="timeline-head"><h2>时间线</h2><button id="split-clip">分割 <kbd>S</kbd></button><button id="delete-clip">删除 <kbd>Del</kbd></button><button id="undo" aria-label="撤销">撤销</button><button id="redo" aria-label="重做">重做</button><button id="clip-snap" aria-pressed="true">吸附</button><span class="timeline-spacer"></span><label>缩放<select id="timeline-zoom"><option value="1">适配</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select></label></div>
+      <div class="timeline-grid">
+        <div class="track-labels"><span>时间</span><span><b>V1</b>背景</span><span><b>A1</b>音乐<button id="change-music" type="button">换歌</button></span><span><b>T1</b>字幕</span></div>
+        <div id="timeline-scroll" class="timeline-scroll" tabindex="0" aria-label="可横向滚动的时间线">
+          <div class="tracks" id="tracks">
+            <div id="ticks" class="track ticks" aria-label="时间刻度"></div>
+            <div id="background-track" class="track background-track" aria-label="背景轨道"></div>
+            <div id="audio-track" class="track audio-track" aria-label="音乐轨道"></div>
+            <div id="lyric-track" class="track lyric-track" aria-label="歌词轨道"></div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-footer"><span id="timeline-hint">选中片段 · 拖动移动 · 拉动边缘修剪</span><span id="timeline-summary"></span></div>
+    </section>
+  </main>
+  <input id="import-file" type="file" hidden>
+  <input id="background-file" type="file" accept="video/*,.mkv" hidden>
+  <input id="wallpaper-folder-input" type="file" webkitdirectory hidden>
+  <input id="lrc-file" type="file" accept=".lrc,.txt" hidden>
+  <dialog id="capture-dialog">
+    <form method="dialog"><button class="dialog-close" aria-label="关闭">×</button></form>
+    <h2>从壁纸文件夹采集动态效果</h2>
+    <p>保持 Wallpaper Engine 运行。工作台会打开并采集该壁纸的独立窗口。</p>
+    <label>壁纸文件夹路径<input id="capture-folder" type="text" spellcheck="false" placeholder="D:\SteamLibrary\steamapps\workshop\content\431960\3446971952"></label>
+    <p id="capture-status" role="status"></p>
+    <button id="capture-load-settings" type="button">读取壁纸设置</button>
+    <div id="capture-settings" hidden></div>
+    <label>采集时长（秒）<input id="capture-duration" type="number" value="10" min="3" max="60"></label>
+    <button id="record" class="primary" type="button">开始窗口采集</button>
+    <video id="sample" controls muted playsinline hidden></video>
+  </dialog>
+  <dialog id="export-dialog">
+    <form method="dialog"><button class="dialog-close" aria-label="关闭">×</button></form>
+    <h2>导出 1080p / 60 FPS</h2>
+    <p>成片直接保存到桌面，无需再次下载。</p>
+    <label>模式<select id="export-mode"><option value="single">单遍</option><option value="repeat">按遍数循环</option><option value="minutes">按分钟循环</option></select></label>
+    <label id="export-value-label">遍数或分钟<input id="export-value" type="number" min="1" step="1" value="1"></label>
+    <div class="button-row"><button id="export-start" class="primary">开始导出</button><button id="export-cancel" disabled>取消导出</button></div>
+    <progress id="export-progress" max="1" value="0"></progress>
+    <p id="export-status" role="status"></p>
+    <button id="download" type="button" hidden>打开桌面中的成片</button>
+    <p id="export-location" style="overflow-wrap:anywhere"></p>
+    <video id="result" controls playsinline hidden></video>
+  </dialog>
+  <dialog id="rename-dialog" aria-labelledby="rename-title">
+    <form method="dialog"><button class="dialog-close" aria-label="关闭">×</button></form>
+    <h2 id="rename-title">重命名背景素材</h2>
+    <form id="rename-form">
+      <label>素材名称<input id="asset-name" required maxlength="120" autofocus></label>
+      <p id="rename-status" role="status"></p>
+      <button id="rename-apply" class="primary" type="submit">保存名称</button>
+    </form>
+  </dialog>
+  <dialog id="replace-dialog" aria-labelledby="replace-title">
+    <form method="dialog"><button class="dialog-close" aria-label="关闭">×</button></form>
+    <h2 id="replace-title">替换背景视频</h2>
+    <p id="replace-asset"></p>
+    <label>要替换的片段<select id="replace-slot"></select></label>
+    <p>仅替换所选片段，其他片段保持不变。</p>
+    <button id="replace-apply" class="primary" type="button">替换并预览</button>
+    <p id="replace-status" role="status"></p>
+  </dialog>
+  <dialog id="guide-dialog" aria-labelledby="guide-title">
+    <form method="dialog"><button class="dialog-close" aria-label="关闭">×</button></form>
+    <h2 id="guide-title">用模板制作一个视频</h2>
+    <ol class="guide-steps">
+      <li><strong>选草稿和模板</strong><p>顶部可以打开上次的草稿，也可以新建一份。左侧「模板」里预览或套用版式。</p></li>
+      <li><strong>添加或替换背景</strong><p>左侧导入背景，拖到时间线空白处，或点「添加」。选中片段后可用「替换」单独更换其中一段。</p></li>
+      <li><strong>剪辑背景和字幕</strong><p>播放头移到片段内部，按 S 分割；Delete 删除并留空。拖动片段或两侧边缘调整位置、时长。右侧可精确输入及调整卡片位置。音乐轨道点「换歌」。Ctrl+Z 撤销，Ctrl+Shift+Z 重做。</p></li>
+      <li><strong>确认画面并导出</strong><p>播放检查节奏，暂停后可逐帧核对。右上角「导出视频」支持单遍和循环。</p></li>
+    </ol>
+    <h2>管理素材</h2>
+    <p>自己导入的条目可以从素材库移除，之后可在「已移除素材」里恢复。素材若仍被草稿使用，页面会列出草稿名。</p>
+    <button id="guide-materials" class="primary" type="button">打开素材库</button>
+  </dialog>
+  <dialog id="music-dialog" aria-labelledby="music-title"><form method="dialog"><button class="dialog-close" aria-label="关闭">×</button></form><h2 id="music-title">更换音乐</h2><p>保留背景和字幕编排。超出歌曲长度的片段保留，导出以当前歌曲为准。</p><div id="music-list"></div><button data-import="audio" type="button">＋ 导入音乐</button></dialog>
+  <script type="module" src="/workbench.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kunio Warriors 字幕动效对照</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1016;color:#e9eef1;font:16px/1.5 system-ui,sans-serif}
+main{width:min(1160px,calc(100% - 32px));margin:32px auto}
+h1{font-size:clamp(22px,4vw,32px);margin:0 0 16px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+button{font:inherit;color:inherit;background:#151d26;border:1px solid #3b4956;border-radius:6px;padding:8px 16px;cursor:pointer}
+button[aria-pressed=true]{background:#c8e3f1;color:#111a21;border-color:#c8e3f1}
+.stage{position:relative;width:100%;aspect-ratio:16/9;background:#101821;overflow:hidden;border-radius:8px}
+iframe{display:block;width:1920px;height:1080px;border:0;transform-origin:top left;pointer-events:none}
+p{margin:14px 0;color:#bfd0db}
+</style>
+<link rel="stylesheet" href="/project/ui-shell.css">
+<main>
+  <h1>Kunio Warriors 字幕动效对照</h1>
+  <nav aria-label="动效方向">
+    <button type="button" data-mode="sheen" aria-pressed="true">冷光划过</button>
+    <button type="button" data-mode="currents" aria-pressed="false">水墨游色</button>
+    <button type="button" data-mode="embers" aria-pressed="false">余烬闪烁</button>
+  </nav>
+  <div class="stage"><iframe title="第 2 秒标题样式与字幕动效预览"></iframe></div>
+  <p role="status">正在载入当前草稿的画面…</p>
+</main>
+<script type="module">
+const stage = document.querySelector('.stage');
+const frame = stage.querySelector('iframe');
+const status = document.querySelector('[role="status"]');
+const choices = [...document.querySelectorAll('[data-mode]')];
+const descriptions = {
+  sheen: '冷白字面上划过一道细亮边，蓝光离开后恢复原来的字色。',
+  currents: '青蓝和紫灰在字形内部沿不同方向缓慢流动，像水墨在纸里洇开。',
+  embers: '字面保留银白底色，少量暖金亮点在笔画里时隐时现。',
+};
+let current = 'sheen';
+let title;
+
+function select(mode) {
+  current = mode;
+  choices.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === mode)));
+  if (title) {
+    title.dataset.demo = mode;
+    status.textContent = descriptions[mode];
+  }
+}
+
+choices.forEach(button => button.addEventListener('click', () => select(button.dataset.mode)));
+new ResizeObserver(() => { frame.style.transform = `scale(${stage.clientWidth / 1920})`; }).observe(stage);
+
+const effects = `
+  #world-title[data-demo] :is(strong,small) { color:transparent; background-clip:text; }
+  #world-title[data-demo="sheen"] :is(strong,small) {
+    background-image:linear-gradient(115deg,#f3f8fb 43%,#9bdcff 48%,#fff 50%,#dcf3ff 53%,#f3f8fb 58%);
+    background-size:270% 100%; animation:demo-sheen 3.4s ease-in-out infinite;
+  }
+  #world-title[data-demo="currents"] :is(strong,small) {
+    background-image:radial-gradient(ellipse at 36% 44%,#7ac8f0 0%,transparent 43%),radial-gradient(ellipse at 66% 57%,#c2a7ea 0%,transparent 45%),linear-gradient(#f4f5fa,#f4f5fa);
+    background-size:140% 180%,150% 200%,100% 100%; animation:demo-currents 6s ease-in-out infinite alternate;
+  }
+  #world-title[data-demo="embers"] :is(strong,small) {
+    background-image:radial-gradient(circle,#fff6cc 0%,#f0ac55 12%,transparent 37%),radial-gradient(circle,#ffe1a3 4%,transparent 30%),linear-gradient(#f3f4f5,#f3f4f5);
+    background-size:137px 83px,219px 107px,100% 100%; animation:demo-embers 4.8s linear infinite;
+  }
+  @keyframes demo-sheen { 0%,15% {background-position:100% 50%} 75%,100% {background-position:0% 50%} }
+  @keyframes demo-currents { from {background-position:0% 0%,100% 100%,0 0} to {background-position:100% 100%,0% 10%,0 0} }
+  @keyframes demo-embers { from {background-position:0 0,40px 0,0 0} to {background-position:137px -83px,-179px 107px,0 0} }
+`;
+
+try {
+  const response = await fetch('/api/workbench');
+  if (!response.ok) throw new Error('无法读取工作台草稿');
+  const data = await response.json();
+  if (!data.draft?.showSongTitle || !data.draft.title.startsWith('Kunio Warriors')) throw new Error('请在工作台打开 Kunio Warriors 草稿后刷新此页。');
+  frame.src = `/project/index.html?draft=${encodeURIComponent(data.key)}&render=1&w=1920&h=1080`;
+  const deadline = performance.now() + 15000;
+  while (!frame.contentWindow.READY && performance.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  if (!frame.contentWindow.READY) throw new Error('预览加载超时，请刷新重试。');
+  await frame.contentWindow.render(20);
+  const scene = frame.contentDocument;
+  title = scene.querySelector('#world-title');
+  const style = scene.createElement('style');
+  style.textContent = effects;
+  scene.head.append(style);
+  select(current);
+} catch (error) {
+  status.textContent = error.message;
+}
+</script>
+</html>

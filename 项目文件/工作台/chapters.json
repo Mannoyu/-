@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "duration": 218.33333333333334,
+  "size": "1920x1080",
+  "fps": 60,
+  "audio": "audio/final.wav",
+  "chapters": [
+    {"id":"part-1","project":".","start":0,"duration":79.03333333333333},
+    {"id":"part-2","project":".","start":79.03333333333333,"duration":69.96666666666667},
+    {"id":"part-3","project":".","start":149,"duration":69.33333333333333}
+  ],
+  "render":{"workers":3,"crf":13,"dpr":1}
+}

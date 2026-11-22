@@ -1,0 +1,16 @@
+{
+  "title": "Mr. Broken Heart",
+  "artist": "松下優也",
+  "subtitle": "まつした ゆうや",
+  "tagline": "まだ、ここに。",
+  "audio": "audio/source.mp3",
+  "lyrics": "assets/lyrics-source.lrc",
+  "translation": "interleaved",
+  "emphasis": ["未完成", "パズル", "涙", "宇宙", "想い出"],
+  "videos": [
+    {"id": "teal-3499283619", "name": "小死神 · Tezcatlipoca", "fps": 60, "loop": 10, "preview": "teal-3499283619-preview-1920.mp4", "file": "assets/sources/teal-3499283619-source.mp4", "focus": 0.5, "accent": [176, 217, 231]},
+    {"id": "violet", "name": "紫色梦境", "file": "assets/sources/violet-original.mp4", "fps": 60, "loop": 20, "preview": "violet-preview-1920.mp4", "focus": 0.56},
+    {"id": "plana", "name": "普拉娜", "file": "assets/sources/plana-loop.mp4", "fps": 60, "loop": 7, "preview": "plana-preview-1920.mp4", "focus": 0.62},
+    {"id": "elaina", "name": "伊蕾娜", "file": "assets/sources/elaina-3302695207-smooth-loop.mp4", "fps": 60, "loop": 20, "frameDir": "elaina-3302695207-smooth", "preview": "elaina-3302695207-smooth-preview-1920.mp4", "focus": 0.66, "accent": [210, 220, 230]}
+  ]
+}

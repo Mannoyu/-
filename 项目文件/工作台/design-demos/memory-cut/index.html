@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mr. Broken Heart · 音乐试听</title>
+<style>
+:root{color-scheme:dark;--paper:#f1efeb;--muted:#b4b0b9;--accent:#ddf6a0}*{box-sizing:border-box}
+body{margin:0;background:#121114;color:var(--paper);font-family:"Microsoft YaHei",sans-serif}
+main{max-width:1560px;margin:auto;padding:20px 28px 28px}header{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:15px}
+h1{margin:0;font-size:20px;font-weight:500}header p{margin:0;font-size:13px;color:var(--muted)}
+.screen{position:relative;width:100%;aspect-ratio:16/9;background:#18151c;overflow:hidden}iframe{width:1920px;height:1080px;border:0;display:block;transform-origin:top left}
+.screen:fullscreen{height:100vh;width:100vw;aspect-ratio:auto;background:#000}.screen:fullscreen iframe{position:absolute}
+.loading{position:absolute;inset:0;background:#19151e;display:grid;place-items:center;text-align:center;padding:30px}[hidden]{display:none!important}
+.controls,.options,.segments{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.controls{margin-top:16px}.options{margin-top:12px;justify-content:space-between}
+button{font:inherit;font-size:13px;border:1px solid #ffffff30;border-radius:4px;padding:11px 17px;color:var(--paper);background:#242128;cursor:pointer}button:hover{background:#36303d}
+button[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}button:disabled{opacity:.45;cursor:wait}
+#play{background:var(--accent);border-color:var(--accent);color:#222b16;min-width:105px;font-weight:600}#seek{flex:1;min-width:100px;accent-color:var(--accent)}#clock{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:90px}
+.loop{font-size:13px;color:var(--muted)}.loop input{accent-color:var(--accent)}.note{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:0}
+@media(max-width:650px){main{padding:14px 10px}header{align-items:flex-start;flex-direction:column;gap:6px}header p{line-height:1.5}button{padding:10px 12px}}
+</style>
+<link rel="stylesheet" href="/project/ui-shell.css">
+</head>
+<body>
+<main>
+<header><h1>Mr. Broken Heart · 音乐试听</h1><p>松下優也</p></header>
+<div class="screen" id="screen"><iframe src="scene.html?v=2" title="音乐影像与双语歌词" allow="autoplay; fullscreen"></iframe><div class="loading">正在载入动态影像和原曲…</div></div>
+<div class="controls"><button id="play" disabled>播放试听</button><button id="restart" disabled>重播</button><input type="range" id="seek" aria-label="试听进度" min="38" max="53.67" step="0.0166667" value="45.5" disabled><output id="clock">00:45 / 00:53</output><button id="fullscreen">全屏</button></div>
+<div class="options"><div class="segments"><button data-segment="verse" aria-pressed="false" disabled>主歌</button><button data-segment="chorus" aria-pressed="true" disabled>副歌</button><button data-segment="next" aria-pressed="false" disabled>另一组影像</button></div><label class="loop"><input type="checkbox" id="loop" checked>循环选段</label></div>
+<audio id="audio" src="../../audio/final.wav" preload="auto"></audio>
+</main>
+<script type="module" src="preview.js?v=2"></script>
+</body></html>

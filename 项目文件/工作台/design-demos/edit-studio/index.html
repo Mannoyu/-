@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>剪辑工作台 · 交互初稿</title><link rel="stylesheet" href="./studio.css"><link rel="stylesheet" href="/project/ui-shell.css"></head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="/workbench" title="返回原工作台"><span class="brand-mark"><i></i><i></i><i></i></span><strong>音乐剪辑工作台</strong></a>
+    <span class="header-divider"></span><span class="draft-title" id="draft-name">正在读取草稿</span><span class="version">交互初稿</span>
+    <span class="header-spacer"></span><span class="session-state"><i></i>本页试编 · 未写入草稿</span>
+    <a class="button quiet" href="/workbench">返回工作台</a><button class="primary" id="review">确认这版操作</button>
+  </header>
+  <main class="editor" id="editor">
+    <section class="upper">
+      <aside class="library pane" aria-label="素材库">
+        <div class="pane-heading"><h2>素材库</h2><span id="asset-count" class="mono"></span></div>
+        <div class="library-tools"><button id="import-open" class="import-button">＋ 导入素材</button><input id="search" type="search" placeholder="搜索素材名称" aria-label="搜索素材"></div>
+        <nav class="tabs" aria-label="素材类型"><button data-tab="video" aria-selected="true">背景</button><button data-tab="audio" aria-selected="false">音乐</button></nav>
+        <div class="asset-grid" id="assets"></div>
+        <footer class="library-footer">拖入时间线，或点「＋」添加背景<br>选中片段后可单独替换</footer>
+      </aside>
+      <section class="monitor pane" aria-label="画面预览">
+        <div class="pane-heading"><h2>画面预览</h2><div class="monitor-meta"><span>16:9</span><span>1080p / 60</span><button id="full" class="icon-button" title="预览全屏">⛶</button></div></div>
+        <div class="viewer-well"><div class="viewer" id="viewer">
+          <img id="background" class="background" alt="当前背景"><div class="image-shade"></div>
+          <div class="card-stack" id="card-stack" tabindex="0" role="button" aria-label="拖动调整卡片位置"><div class="rear-card"></div><div class="front-card"><img id="card-image" alt="背景卡片"><div class="card-caption"><span id="card-title"></span><span>LIVE COLLECTION</span></div></div><span class="card-handle tl"></span><span class="card-handle tr"></span><span class="card-handle bl"></span><span class="card-handle br"></span></div>
+          <div class="song-title"><h1 id="song-title"></h1><p id="song-artist"></p></div>
+          <p class="subtitle" id="subtitle"></p><span class="viewer-label">片段编辑预览</span><div class="empty-preview" id="empty-preview" hidden><span>此处没有背景</span><small>从左侧添加素材，或把片段拖到这里</small></div>
+        </div></div>
+        <div class="transport"><div class="transport-buttons"><button id="previous" class="icon-button" aria-label="上一帧">‹</button><button id="play" class="play" aria-label="播放">▶</button><button id="next" class="icon-button" aria-label="下一帧">›</button></div><output id="clock" class="mono">00:00.00</output><span class="transport-slash">/</span><span id="total" class="mono muted"></span><span class="header-spacer"></span><button id="select-card" class="quiet">调整卡片位置</button></div>
+        <audio id="audio" preload="metadata"></audio>
+      </section>
+      <aside class="inspector pane" aria-label="片段属性">
+        <div class="pane-heading"><h2>片段属性</h2><span id="selection-tag" class="tiny-badge">未选择</span></div>
+        <div id="inspector-empty" class="inspector-empty">选中一个背景片段<br><span>在这里精确调整时间与画面</span></div>
+        <div id="inspector-content" class="inspector-content" hidden>
+          <div class="selection-summary"><img id="selection-image" alt=""><div><strong id="selection-name"></strong><span id="selection-spec"></span></div></div>
+          <nav class="tabs compact" aria-label="属性类型"><button data-inspector="timing" aria-selected="true">片段</button><button data-inspector="picture" aria-selected="false">画面 / 卡片</button></nav>
+          <div id="timing-panel" class="property-panel">
+            <h3>时间线位置</h3><div class="field-grid"><label>开始时间 <span class="unit-input"><input id="clip-start" type="number" min="0" step="0.1"><span>秒</span></span></label><label>持续时长 <span class="unit-input"><input id="clip-duration" type="number" min="0.017" step="0.1"><span>秒</span></span></label></div>
+            <div class="end-time">结束时间 <output id="clip-end" class="mono"></output></div>
+            <h3>素材使用范围</h3><div class="field-grid"><label>素材入点 <span class="unit-input"><input id="source-in" type="number" min="0" step="0.1"><span>秒</span></span></label><label>素材出点 <span class="unit-input"><input id="source-out" type="number" min="0.017" step="0.1"><span>秒</span></span></label></div>
+            <p class="field-note">素材不足片段长度时循环播放。分割后保持画面连续。</p><div class="property-actions"><button id="replace">从素材库替换</button><button id="delete-property" class="danger">删除此片段</button></div>
+          </div>
+          <div id="picture-panel" class="property-panel" hidden><h3>背景取景</h3><label>水平取景<input id="focus" type="range" min="0" max="1" step="0.01"></label><label>背景缩放<span class="unit-input"><input id="zoom" type="number" min="1" max="3" step="0.05"><span>倍</span></span></label><h3>卡片位置</h3><p class="field-note">也可以直接在预览画面中拖动卡片。</p><div class="field-grid"><label>横向 X<input id="card-x" type="number" min="-500" max="500" step="1"></label><label>纵向 Y<input id="card-y" type="number" min="-500" max="500" step="1"></label></div><label>卡片缩放<span class="unit-input"><input id="card-scale" type="number" min="0.5" max="1.5" step="0.05"><span>倍</span></span></label><button id="reset-card">重置卡片位置</button></div>
+        </div>
+        <div class="inspector-footer">仅影响所选片段，不改变其他背景</div>
+      </aside>
+    </section>
+    <div class="resize-bar" id="resize-bar" role="separator" aria-label="调整时间线高度" aria-orientation="horizontal" tabindex="0"><span></span></div>
+    <section class="timeline pane" aria-label="剪辑时间线">
+      <div class="timeline-toolbar"><div class="edit-tools"><span class="section-label">时间线</span><span class="tool-divider"></span><button id="split" title="在播放头处分割 · S">分割 <kbd>S</kbd></button><button id="delete" title="删除片段，保留空位 · Delete">删除 <kbd>Del</kbd></button><span class="tool-divider"></span><button id="undo" aria-label="撤销" title="撤销 Ctrl+Z">↶</button><button id="redo" aria-label="重做" title="重做 Ctrl+Shift+Z">↷</button><span class="tool-divider"></span><button id="snap" aria-pressed="true" class="toggle">吸附</button></div><div class="zoom-tools"><button id="fit" class="quiet">适配</button><label>缩放<input id="zoom-timeline" type="range" min="1" max="6" step="0.25" value="1"></label></div></div>
+      <div class="timeline-body"><div class="track-labels"><div class="ruler-label mono">轨道</div><div class="track-label video-label"><span class="track-id">V1</span><strong>背景</strong><span class="track-count" id="clip-count"></span></div><div class="track-label audio-label"><span class="track-id">A1</span><strong>音乐</strong><button id="change-audio">换歌</button></div><div class="track-label lyric-label"><span class="track-id">T1</span><strong>字幕</strong></div></div>
+        <div class="timeline-scroll" id="timeline-scroll"><div class="tracks" id="tracks"><div class="ruler" id="ruler" aria-label="时间刻度"></div><div class="video-track track" id="video-track" aria-label="背景片段"></div><div class="audio-track track" id="audio-track"><div class="audio-clip" id="audio-clip"><span id="audio-name"></span><canvas id="waveform" aria-label="当前音频能量波形"></canvas></div></div><div class="lyric-track track" id="lyric-track"></div><div class="playhead" id="playhead"><span></span></div><div class="audio-end" id="audio-end"><span>歌曲结束</span></div></div></div>
+      </div><footer class="timeline-footer"><span id="hint" role="status">选中片段 · 拖动移动 · 拉动边缘修剪</span><span class="mono" id="footer-time"></span></footer>
+    </section>
+  </main>
+  <dialog id="music-dialog"><div class="dialog-heading"><h2>更换音乐</h2><button data-close="music-dialog" aria-label="关闭">×</button></div><p class="muted">保留背景与字幕编排。超出新歌曲时长的片段仍留在时间线上。</p><div id="music-list" class="music-list"></div><button id="import-audio" class="import-button">＋ 从电脑选择音乐</button></dialog>
+  <dialog id="import-dialog"><div class="dialog-heading"><h2>导入素材到初稿</h2><button data-close="import-dialog" aria-label="关闭">×</button></div><p class="muted">仅在本页试编，刷新后需重新选择本地文件。</p><div class="import-options"><button id="import-video">选择背景视频</button><button id="import-music">选择音乐文件</button></div></dialog>
+  <dialog id="review-dialog"><div class="dialog-heading"><h2>这版操作顺手吗？</h2><button data-close="review-dialog" aria-label="关闭">×</button></div><p>当前是交互初稿，分割、删除、修剪和换歌均只作用于本页。</p><p class="muted">确认后接入草稿保存、原有卡片动效与桌面导出。可以直接在聊天里告诉我需要调整的地方。</p><button data-close="review-dialog" class="primary">继续试用</button></dialog>
+  <input id="file-video" type="file" accept="video/*" hidden><input id="file-audio" type="file" accept="audio/*" hidden>
+  <script type="module" src="./studio.mjs"></script>
+</body></html>

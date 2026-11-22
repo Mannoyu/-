@@ -1,0 +1,54 @@
+.perfStage{position:absolute;inset:0;visibility:hidden;pointer-events:none;color:#fffaf2;--perf-white:#fffaf2;--perf-accent:color-mix(in srgb,var(--accent) 72%,#fffaf2);z-index:3}
+.perfStage[hidden]{display:none}
+.perfScene{position:absolute;left:51%;top:28%;width:42%;visibility:hidden}
+.perfCopy{position:relative}
+.perfRow{position:relative;width:100%;margin:0 0 12px;padding:4px 16px 10px 2px;line-height:1.15;white-space:nowrap;font:700 88px/1.15 "Microsoft YaHei",sans-serif;letter-spacing:1px;color:var(--perf-white);text-shadow:0 3px 14px #020b15aa}
+.perfPhrase{display:inline-block}
+.perfSlice{position:absolute;top:4px;left:2px;white-space:pre;pointer-events:none;opacity:var(--perf-slice-alpha,0);transform:translateX(var(--perf-split,0px));clip-path:polygon(0 46%,100% 37%,100% 64%,0 73%);color:var(--perf-accent)}
+.perfTrace{position:absolute;top:4px;left:2px;white-space:pre;pointer-events:none;opacity:var(--perf-trace,0);color:transparent;-webkit-text-stroke:.8px var(--perf-accent);text-shadow:none;transform:translateX(5px);clip-path:polygon(calc(var(--perf-trace-pos) - 16%) 0,var(--perf-trace-pos) 0,calc(var(--perf-trace-pos) - 24%) 100%,calc(var(--perf-trace-pos) - 40%) 100%)}
+.perfRole-lead .perfTrace,.perfRole-middle .perfTrace,.perfRole-tail .perfTrace,.perfRole-credit .perfTrace{display:none}
+.perfRole-lead{font-size:32px;line-height:1.4;font-weight:400;letter-spacing:3px;color:#f2efe8e0;margin-bottom:12px}
+.perfRole-middle{font-size:46px;font-weight:400;color:#f4f0e7}
+.perfRole-tail{font-size:34px;font-weight:400}
+.perfRole-credit{font-size:42px;font-weight:400}
+.perfRole-hero[data-latin="true"]{font:700 italic 104px/1.2 Georgia,"Times New Roman",serif;letter-spacing:-3px;color:var(--perf-accent)}
+.perfTranslation{margin:28px 0 0;max-width:100%;font:400 34px/1.65 "Microsoft YaHei",sans-serif;letter-spacing:1px;text-wrap:pretty;overflow-wrap:anywhere;color:#fffaf2;text-shadow:0 2px 2px #020b15,0 3px 12px #020b15}
+.perfSignal{display:flex;align-items:center;gap:5px;height:24px;margin-top:30px;opacity:.75}
+.perfSignal i{display:block;width:2px;height:22px;background:var(--perf-accent);transform-origin:center}
+.perf-broken{left:47%;top:20%;width:47%}
+.perf-broken .perfRole-lead{font-size:30px;letter-spacing:2px;margin-bottom:8px}
+.perfRole-broken,.perfRole-heart{font:700 italic 174px/1.02 Georgia,"Times New Roman",serif;letter-spacing:-7px;padding:2px 20px 16px 2px;margin-bottom:0}
+.perfRole-heart{font-size:190px;text-align:right;color:var(--perf-accent);margin-top:-10px}
+.perfRole-heart .perfPhrase{color:transparent;-webkit-text-stroke:1px var(--perf-accent);background:linear-gradient(90deg,var(--perf-accent) 0 var(--perf-fill,100%),transparent var(--perf-fill,100%) 100%);background-clip:text;-webkit-background-clip:text;text-shadow:none;filter:drop-shadow(0 3px 10px #020b1566)}
+.perfRole-heart .perfSlice{left:auto;right:20px}
+.perfRole-broken .perfTrace,.perfRole-heart .perfTrace{top:2px}
+.perfRole-heart .perfTrace{left:auto;right:20px}
+.perf-broken .perfTranslation{margin-top:24px;max-width:760px;font-size:34px}
+.perf-broken .perfSignal{margin-top:24px;justify-content:flex-end;padding-right:32px}
+.perf-farewell .perfRole-hero{font:700 italic 148px/1.2 Georgia,"Times New Roman",serif;letter-spacing:-5px;color:var(--perf-accent)}
+.perf-farewell{top:29%;left:49%;width:45%}
+.perf-cosmos{left:8%;top:25%;width:44%;text-align:center}
+.perf-cosmos .perfRole-lead{letter-spacing:12px;font-size:38px}
+.perf-cosmos .perfRole-middle{letter-spacing:12px;font-size:28px;margin:10px 0 22px}
+.perfRole-cosmos{font-size:168px;letter-spacing:48px;padding-left:48px;color:var(--perf-accent)}
+.perf-cosmos .perfSignal{justify-content:center}
+.perf-unfinished .perfRole-hero{font-size:128px;letter-spacing:9px;color:var(--perf-accent)}
+.perf-unfinished{top:30%}
+.perfScene[data-kind="outro"]{top:33%}
+.perfScene[data-kind="outro"] .perfRole-hero{font:700 italic 102px/1.2 Georgia,"Times New Roman",serif;letter-spacing:-4px}
+.performance-active .lyrics{display:none}
+.performance-design .memoryRail,.performance-design .cardInfo,.performance-design #atmosphere,.performance-design #halo{display:none}
+.performance-design .wallCard{border-radius:8px;background:#192127;border:1px solid #fffaf250;box-shadow:0 24px 64px #0005}
+.performance-design .wallCard:before{display:none}
+.performance-design .cardSurface{inset:4px;border-radius:4px;box-shadow:none}
+.performance-design .cardReflection{opacity:.045}
+.performance-design .cardShine{opacity:.12}
+.performance-design footer{left:7.5%;right:7.5%;bottom:7%;opacity:.5}
+.performance-design .progress{width:100%}
+.performance-design .progress>span{display:none}
+.performance-design .rail{width:100%;height:1px;background:#fffaf21a}
+.performance-design #progressFill{background:var(--accent)}
+.performance-design #progressFill:after{display:none}
+.performance-design .shade{background:linear-gradient(90deg,#06151d1a 0%,#06151d29 38%,#06151d85 61%,#06151db3 100%)}
+.performance-active[data-performance-shot="cosmos"] .shade{background:linear-gradient(90deg,#06151da6 0%,#06151d66 44%,#06151d29 65%,#06151d1a 100%)}
+@media(prefers-reduced-motion:reduce){.perfSlice,.perfTrace{display:none}.perfSignal i{transform:scaleY(.24)}}

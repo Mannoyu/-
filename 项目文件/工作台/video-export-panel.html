@@ -1,0 +1,18 @@
+<dialog id="video-export-dialog">
+  <form id="video-export-form" style="display:grid;gap:14px">
+    <strong>导出视频 · 1080p / 60 FPS</strong>
+    <p>成片直接保存到桌面，无需再次下载。</p>
+    <label>时长 <select name="mode"><option value="single">单遍</option><option value="repeat">按遍数循环</option><option value="minutes">按分钟循环</option></select></label>
+    <label id="video-export-value-row" hidden><span id="video-export-unit">遍数</span> <input name="value" type="number" step="1" min="1" max="60" value="10"></label>
+    <output id="video-export-status" aria-live="polite"></output>
+    <progress id="video-export-progress" max="1" value="0" style="width:100%" hidden></progress>
+    <video id="video-export-player" controls playsinline preload="metadata" style="width:100%;max-height:42vh" hidden></video>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button type="submit" class="primary">开始导出</button>
+      <button type="button" id="video-export-cancel" hidden>取消导出</button>
+      <button type="button" id="video-export-download" hidden>打开桌面中的成片</button>
+      <button type="button" id="video-export-close">关闭</button>
+    </div>
+  </form>
+</dialog>
+<script type="module" src="/project/video-export-panel.js"></script>

@@ -1,0 +1,21 @@
+.lyrics{top:25%;left:50.5%;width:43%;padding:20px 12px 22px;border:0;border-radius:0;background:none;backdrop-filter:none;box-shadow:none;isolation:isolate}
+.lyrics:before{content:"";position:absolute;left:-45px;right:0;top:110px;height:250px;pointer-events:none;background:radial-gradient(ellipse at 38% 50%,#0a192a52,transparent 72%);backdrop-filter:blur(7px);mask-image:radial-gradient(ellipse at 38% 50%,black 5%,transparent 70%);z-index:-1}
+.lyrics:after{content:none}
+.lyricLabel{margin-left:30px;font-size:10px;letter-spacing:5px;opacity:.65}
+.lyricLabel>span:first-child{width:19px;opacity:.5}
+.lyricLabel b{font-size:10px;letter-spacing:2px;opacity:.7}
+.lyricLabel #verseNumber{margin-right:62px;font-size:10px;opacity:.55}
+.lyricWindow{margin-top:21px;mask-image:linear-gradient(transparent,black 20%,black 77%,transparent)}
+.lyricLine{font-size:49px;letter-spacing:2px;font-weight:400}
+.lyricLine .sung{color:color-mix(in srgb,var(--accent) 65%,#f3f7f5)}
+.lyricAura{left:-10px;width:590px;background:radial-gradient(ellipse at var(--glass-x,30%) 50%,color-mix(in srgb,var(--accent) 5%,transparent),transparent 72%)}
+.lyricFoot{margin-top:2px;opacity:.55;font-size:11px;letter-spacing:3px}
+.focusMark{height:4px;top:178px;width:4px;left:5px;border-radius:50%;box-shadow:0 0 10px color-mix(in srgb,var(--accent) 30%,transparent)}
+#lyricComet{opacity:.2;top:220px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 20%,transparent));box-shadow:none}
+#lyricComet:after{width:2px;height:2px;opacity:.45;box-shadow:none}
+
+/* Shared scene accent interpolates on the exact background transition timeline. */
+.progress .rail{background:color-mix(in srgb,var(--accent) 18%,transparent)}
+#progressFill{background:var(--accent);box-shadow:0 0 8px color-mix(in srgb,var(--accent) 18%,transparent)}
+#progressFill:after{background:color-mix(in srgb,var(--accent) 80%,white);box-shadow:0 0 9px color-mix(in srgb,var(--accent) 38%,transparent)}
+.progress #clock{color:color-mix(in srgb,var(--accent) 70%,#b6cfcc)}

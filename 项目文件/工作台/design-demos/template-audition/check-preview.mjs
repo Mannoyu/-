@@ -1,0 +1,68 @@
+import {loadChromium,launch} from 'file:///C:/Users/123/.codex/skills/motion-showreel/scripts/lib/browser.mjs';
+import {writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+
+const directory=fileURLToPath(new URL('.',import.meta.url));
+const url=process.argv[2];
+if(!url)throw Error('Supply the running audition page URL');
+const browser=await launch(await loadChromium());
+const errors=[];
+try{
+  const page=await browser.newPage({viewport:{width:1560,height:1080},deviceScaleFactor:1});
+  page.on('pageerror',error=>errors.push(error.message));
+  await page.goto(url);
+  await page.waitForFunction(()=>window.AUDITION_READY===true,null,{timeout:120000});
+  await page.evaluate(async()=>{window.audition.setMode('demo');await window.audition.seek(46);});
+  const layout=await page.evaluate(()=>{
+    const doc=document.querySelector('iframe').contentDocument;
+    const scenes=[...doc.querySelectorAll('.audition-line')];
+    const clean=s=>s.replace(/\s+/g,'');
+    return scenes.map((scene,index)=>{
+      const original=scene.querySelector('.audition-original'),caption=scene.querySelector('.audition-caption');
+      return {index,text:clean(original.textContent)===clean(window.audition.lyrics[index].text),translation:caption.textContent===window.audition.lyrics[index].translation,originalFits:original.scrollHeight<=188&&original.scrollWidth<=original.clientWidth+1,captionFits:caption.scrollHeight<=110&&caption.scrollWidth<=caption.clientWidth+1};
+    });
+  });
+  if(layout.some(row=>!row.text||!row.translation||!row.originalFits||!row.captionFits))throw Error('Lyric content or fit check failed: '+JSON.stringify(layout.filter(row=>!row.text||!row.translation||!row.originalFits||!row.captionFits)));
+  await page.locator('#screen').screenshot({path:directory+'demo-final.png'});
+  const position=()=>page.evaluate(()=>{const e=document.querySelector('iframe').contentDocument.querySelector('.audition-line[aria-hidden="false"] .audition-original');const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
+  const firstPosition=await position();
+  await page.evaluate(()=>window.audition.seek(46.3));
+  const stable=JSON.stringify(firstPosition)===JSON.stringify(await position());
+  if(!stable)throw Error('Reading baseline is unstable');
+  await page.click('[data-mode="original"]');
+  await page.waitForFunction(()=>!document.querySelector('iframe').contentDocument.querySelector('.templateFrame').hidden);
+  await page.locator('#screen').screenshot({path:directory+'current-template.png'});
+  await page.click('[data-mode="demo"]');
+  await page.click('[data-segment="verse"]');
+  await page.evaluate(()=>window.audition.seek(24.8));
+  await page.locator('#screen').screenshot({path:directory+'demo-verse.png'});
+  await page.click('#play');
+  await page.waitForFunction(()=>document.querySelector('#audio').currentTime>25.5,null,{timeout:10000});
+  await page.click('#play');
+  const playback=await page.evaluate(()=>({audioTime:document.querySelector('#audio').currentTime,readyState:document.querySelector('#audio').readyState,state:window.audition.state()}));
+  if(playback.state.playing||Math.abs(playback.audioTime-playback.state.time)>.15)throw Error('Playback clock check failed');
+  await page.click('[data-segment="next"]');
+  await page.evaluate(()=>window.audition.seek(81));
+  await page.locator('#screen').screenshot({path:directory+'demo-next.png'});
+  await page.click('[data-segment="chorus"]');
+  await page.evaluate(()=>window.audition.seek(53.55));
+  await page.click('#play');
+  await page.waitForFunction(()=>document.querySelector('#audio').currentTime<41,null,{timeout:10000});
+  await page.click('#play');
+  const loop=await page.evaluate(()=>window.audition.state());
+  await page.evaluate(()=>window.audition.seek(40));
+  const deterministicA=await position();
+  await page.evaluate(async()=>{await window.audition.seek(48);await window.audition.seek(40);});
+  const deterministic=JSON.stringify(deterministicA)===JSON.stringify(await position());
+  if(!deterministic)throw Error('Random seek layout changed');
+  await page.setViewportSize({width:430,height:940});
+  const mobile=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,screenWidth:document.querySelector('#screen').clientWidth}));
+  if(mobile.scrollWidth>mobile.width)throw Error('Mobile controls overflow');
+  await page.screenshot({path:directory+'demo-mobile.png'});
+  await page.setViewportSize({width:1560,height:1080});
+  await page.evaluate(()=>window.audition.seek(39.6));
+  const report={errors,lyricCount:layout.length,layout,stable,deterministic,playback,loop,mobile};
+  await writeFile(directory+'check-results.json',JSON.stringify(report,null,2));
+  if(errors.length)throw Error(errors.join('\n'));
+  console.log(JSON.stringify({directory,errors,lyricCount:layout.length,stable,deterministic,playback,loop,mobile}));
+}finally{await browser.close();}

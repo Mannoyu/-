@@ -1,0 +1,248 @@
+{
+  "errors": [],
+  "geometry": [
+    {
+      "index": 0,
+      "headlineBottom": 1000,
+      "okay": true
+    },
+    {
+      "index": 1,
+      "headlineBottom": 1000,
+      "okay": true
+    },
+    {
+      "index": 2,
+      "headlineBottom": 1000,
+      "okay": true
+    },
+    {
+      "index": 3,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 4,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 5,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 6,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 7,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 8,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 9,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 10,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 11,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 12,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 13,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 14,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 15,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 16,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 17,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 18,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 19,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 20,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 21,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 22,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 23,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 24,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 25,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 26,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 27,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 28,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 29,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 30,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 31,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 32,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 33,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 34,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 35,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 36,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    },
+    {
+      "index": 37,
+      "headlineBottom": 927.6875,
+      "translationTop": 949.6875,
+      "okay": true
+    }
+  ],
+  "cut": [
+    0,
+    1
+  ],
+  "playback": {
+    "audio": 40.162644,
+    "readyState": 4,
+    "scene": {
+      "time": 40.008577,
+      "index": 5,
+      "active": 1
+    }
+  },
+  "deterministic": true,
+  "mobile": {
+    "width": 430,
+    "scroll": 430
+  }
+}

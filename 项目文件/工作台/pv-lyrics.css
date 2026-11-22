@@ -1,0 +1,74 @@
+.lyrics.pv-mode{top:var(--pv-top,21%);left:var(--pv-left,51%);width:var(--pv-width,42%);--lyric-key:color-mix(in srgb,var(--accent) 60%,#fff);--lyric-light:color-mix(in srgb,var(--accent) 30%,#fff);--lyric-soft:color-mix(in srgb,var(--accent) 25%,#edf3fc);--lyric-shadow:color-mix(in srgb,var(--accent) 12%,#07101f)}
+.pv-mode .lyricWindow{height:520px;margin-top:24px;overflow:visible;mask-image:none}
+.pv-mode #lyricTrack,.pv-mode .lyricSpine,.pv-mode #lyricComet,.pv-mode .focusMark{display:none}
+.pv-mode .lyricAura{left:30px;top:95px;width:710px;height:310px}
+.pv-mode:before{top:115px;left:30px;right:-25px;height:450px;background:radial-gradient(ellipse at 44% 50%,#04101ac9,transparent 74%)}
+.pv-mode .lyricFoot{margin-top:10px}
+.pvStage{position:absolute;inset:0 20px 0 var(--pv-inset,40px)}
+.pvScene{position:absolute;inset:0;visibility:hidden;color:#fafdfc}
+.pvMeta{position:absolute;top:12px;left:0;right:0;display:flex;align-items:center;gap:15px;font:10px/1.2 "Microsoft YaHei",sans-serif;letter-spacing:2.8px;color:var(--accent);opacity:.68}
+.pvMeta i{width:36px;height:1px;background:currentColor;opacity:.45}
+.pvMeta>span:last-child{margin-left:auto;letter-spacing:1.6px;font-size:9px;opacity:.65}
+.pvEcho{position:absolute;top:47px;left:-5px;right:0;overflow:hidden;white-space:nowrap;font:700 134px/1.2 Georgia,"Microsoft YaHei",serif;letter-spacing:-4px;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px var(--accent);pointer-events:none;opacity:0}
+.pvText{position:absolute;left:0;right:0;top:var(--pv-offset,100px)}
+.pvRow{position:relative;width:100%;white-space:nowrap;overflow:hidden;padding:5px 8px 10px 2px;margin-bottom:var(--pv-rowGap,8px);line-height:1.18;letter-spacing:2px;text-shadow:0 2px 8px #01071199}
+.pvPart{display:inline-block}
+.pvGlyph{position:relative;display:inline-block;white-space:pre;transform-origin:50% 85%;filter:brightness(calc(1 + var(--pv-glow,0)*.38))}
+.pvInk{position:relative;z-index:2}
+.pvContourLine,.pvContourEcho{display:none;position:absolute;inset:0;white-space:pre;pointer-events:none;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none;transform-origin:50% 50%}
+.pvContour .pvGlyph{filter:none}
+.pvContour .pvInk{display:inline-block;clip-path:var(--pv-ink-clip,none);text-shadow:0 2px 0 var(--lyric-shadow),0 4px 10px #02081199}
+.pvContour .pvContourLine{display:block;z-index:1;-webkit-text-stroke:.8px var(--lyric-light);opacity:var(--pv-line-alpha,0)}
+.pvContour .pvContourEcho{display:block;z-index:0;-webkit-text-stroke:.7px var(--lyric-light);opacity:var(--pv-echo-alpha,0);transform:scale(var(--pv-echo-scale,1))}
+.pv-lead{font:500 var(--pv-lead,31px)/1.3 "Microsoft YaHei",sans-serif;letter-spacing:2px;color:var(--lyric-soft)}
+.pv-middle{padding-left:35px;font:500 52px/1.2 "Microsoft YaHei",sans-serif;letter-spacing:3px;color:var(--lyric-light)}
+.pv-hero{font:700 var(--pv-hero,76px)/1.2 "Microsoft YaHei",sans-serif;letter-spacing:1.5px;color:var(--lyric-key);text-shadow:0 2px 0 var(--lyric-shadow),0 5px 16px #020811a6,0 0 24px color-mix(in srgb,var(--accent) 12%,transparent)}
+.pv-tail{padding-left:8px;font:400 35px/1.2 "Microsoft YaHei",sans-serif;letter-spacing:4px;color:var(--lyric-light)}
+.pv-credit{font:500 50px/1.2 "Microsoft YaHei",sans-serif;letter-spacing:1px}
+.pvLatin .pv-hero{font:700 italic var(--pv-latin,96px)/1.22 Georgia,"Times New Roman",serif;letter-spacing:-3px;color:var(--lyric-key);padding:8px 10px 16px 2px}
+.pvChorus .pv-hero{--lyric-key:color-mix(in srgb,var(--accent) 65%,white)}
+.pvLatin .pv-hero .pvGlyph{-webkit-text-stroke:.35px currentColor}
+.pvVariant1 .pv-hero{text-align:right}
+.pvVariant2 .pv-lead{padding-left:28px}
+.pvTranslation{display:flex;align-items:flex-start;gap:14px;margin-top:var(--pv-translationGap,26px);max-width:100%;font:500 var(--pv-translation,32px)/1.55 "Microsoft YaHei",sans-serif;letter-spacing:.8px;color:#f4f7f6;text-shadow:0 2px 2px #010711,0 3px 12px #010711;opacity:0}
+.pvTranslation>span{min-width:0;overflow-wrap:anywhere}
+.pvTranslation i{display:block;flex-shrink:0;width:22px;height:2px;margin-top:.8em;background:var(--accent);opacity:.9}
+.pvTranslationFocus .pvTranslation{font-size:40px;line-height:1.55}
+.pvTranslationFocus .pvTranslation strong{display:block;font-size:50px;font-weight:600;line-height:1.45;letter-spacing:1.5px;color:#fff8f4}
+.pvUnderline{position:relative;height:2px;width:180px;margin-top:28px;background:linear-gradient(90deg,var(--accent) 0 24px,transparent 24px 32px,color-mix(in srgb,var(--accent) 35%,transparent) 32px,transparent);transform-origin:left}
+.pvUnderline:after{content:"";position:absolute;left:var(--pv-spark,0%);top:-1px;width:27px;height:3px;transform:translateX(-100%);background:linear-gradient(90deg,transparent,var(--accent),#fff);border-radius:50%;box-shadow:0 0 8px var(--accent);opacity:var(--pv-spark-opacity,0);pointer-events:none}
+.pvTranslation i{box-shadow:0 0 calc(2px + var(--pv-breath,0)*7px) color-mix(in srgb,var(--accent) 45%,transparent)}
+.pvNext{position:absolute;left:0;right:0;bottom:11px;display:flex;align-items:center;gap:16px;color:#e4ede8;opacity:0}
+.pvNext>span{flex-shrink:0;font:8px/1.2 Georgia,serif;letter-spacing:2px;opacity:.65}
+.pvNext p{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:16px/1.5 "Microsoft YaHei",sans-serif;letter-spacing:1px}
+.pvScene[data-kind="credit"] .pvText{top:135px}
+.pvScene[data-kind="outro"] .pvText{top:135px}
+.pvScene[data-semantic="distance"] .pvText{top:24px}
+.pvScene[data-semantic="distance"] .pvRow{overflow:visible;text-align:center}
+.pv-distance{font:400 35px/1.6 "Microsoft YaHei",sans-serif;letter-spacing:8px}
+.pvScene[data-semantic="distance"] .pv-lead{font-size:23px;letter-spacing:12px;padding:12px 0 0;color:var(--lyric-soft)}
+.pv-cosmos{font:600 112px/1.2 "Microsoft YaHei",sans-serif;letter-spacing:18px;color:var(--lyric-key);text-shadow:0 3px 0 var(--lyric-shadow),0 4px 25px #121a30}
+.pvScene[data-semantic="distance"] .pvTranslation{justify-content:center;margin-top:25px}
+.pvScene[data-semantic="distance"] .pvUnderline{margin:24px auto 0;width:180px}
+.pvOrbit{position:absolute;left:10%;top:150px;width:80%;height:165px;pointer-events:none;opacity:0}
+.pvOrbit i{position:absolute;inset:0;border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);border-radius:50%}
+.pvOrbit i:nth-child(2){inset:23px -24px;transform:rotate(30deg);opacity:.4}
+.pvOrbit b{position:absolute;top:50%;left:0;width:5px;height:5px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent)}
+.pvOrbit b:last-child{left:auto;right:0}
+.pvScene[data-semantic="fracture"] .pvText{top:66px;padding:0 20px}
+.pvScene[data-semantic="fracture"] .pv-lead{font-size:27px;letter-spacing:2px;margin-bottom:15px}
+.pv-broken,.pv-heart{font:italic 700 112px/.98 Georgia,"Times New Roman",serif;letter-spacing:-4px;overflow:visible;padding:5px 18px 12px;color:#fff8f4}
+.pv-heart{text-align:right;color:var(--accent)}
+.pvScene[data-semantic="fracture"] .pvTranslation{margin-top:24px}
+.pvScene[data-semantic="fracture"] .pvUnderline{width:70%;height:1px;transform-origin:left}
+.pvScene[data-semantic="farewell"] .pv-hero{font-size:128px;text-align:left;padding:14px 6px 22px;letter-spacing:-6px}
+.pvScene[data-semantic="farewell"] .pvText{top:110px}
+.pvScene[data-semantic="puzzle"] .pvRow{overflow:visible}
+.pvScene[data-semantic="puzzle"] .pv-hero{letter-spacing:10px;font-size:95px}
+.pvScene[data-semantic="puzzle"] .pvText{padding-right:36px}
+.lyrics.pv-mode:before{display:none}
+.pv-distance{height:92px;padding:0;font-size:24px;letter-spacing:0}
+.pv-distance .pvPart{display:block;width:100%;height:100%}
+.pv-distance .pvGlyph{position:absolute;left:50%;top:0}
+.pv-distance .pvGlyph:first-child,.pv-distance .pvGlyph:nth-child(3){font-size:49px;font-weight:500;color:var(--accent)}
+.pv-distance .pvGlyph:nth-child(2){top:14px;font-size:21px;opacity:.65}

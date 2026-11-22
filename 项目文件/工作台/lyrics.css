@@ -1,0 +1,15 @@
+.lyrics{left:51%;top:26.5%;width:42%}
+.lyricLabel{font-size:12px;letter-spacing:4px}
+.lyricLabel #verseNumber{margin-left:auto;margin-right:60px;width:auto;height:auto;background:none;font-size:12px;letter-spacing:3px;font-variant-numeric:tabular-nums;color:#cfe5dd73}
+.lyricWindow{height:370px;margin-top:23px;overflow:hidden;mask-image:linear-gradient(transparent,black 14%,black 81%,transparent)}
+.lyricLine{height:120px;font-size:54px;letter-spacing:2px;font-weight:500;padding-left:30px;transform-origin:30px center}
+.lyricLine .base{line-height:1.6;isolation:isolate}
+.lyricLine .sung{color:var(--accent);clip-path:none;mask-image:linear-gradient(90deg,black 0%,black var(--reveal-solid,0%),transparent var(--reveal-edge,0%));text-shadow:0 0 24px color-mix(in srgb,var(--accent) 24%,transparent)}
+.lyricChar{display:inline-block;white-space:pre}
+.lyricAura{position:absolute;left:0;top:130px;width:620px;height:115px;background:radial-gradient(ellipse at 25% 50%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 70%);pointer-events:none}
+.focusMark{position:absolute;left:3px;top:168px;width:3px;height:25px;border-radius:3px;background:var(--accent);box-shadow:0 0 16px color-mix(in srgb,var(--accent) 45%,transparent)}
+#lyricComet{top:224px;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 40%,transparent),var(--accent));box-shadow:none}
+#lyricComet:after{background:var(--accent)}
+.lyricFoot{margin-top:16px;padding-left:30px;font-size:12px;letter-spacing:3px;gap:17px}
+.verseRail{position:relative;width:48px;height:2px;background:#cce9df26;overflow:hidden}
+.verseRail i{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent)}

@@ -1,0 +1,19 @@
+.lyrics{top:20.5%;left:50.5%;width:43%;padding:20px 12px 22px}
+.lyrics:before{top:100px;height:410px;background:radial-gradient(ellipse at 40% 50%,#0917216b,transparent 73%)}
+.lyricLabel{margin-left:58px;font-size:12px;letter-spacing:4px;opacity:.85;gap:13px}
+.lyricLabel b{font-size:10px;opacity:.65}
+.lyricLabel #verseNumber{margin-right:42px;font-size:11px;letter-spacing:2px;opacity:.75}
+.lyricWindow{height:500px;margin-top:29px;mask-image:linear-gradient(transparent,black 9%,black 90%,transparent)}
+.lyricSpine{position:absolute;top:30px;bottom:30px;left:30px;width:1px;background:linear-gradient(transparent,#d1e6df26 25%,#d1e6df26 75%,transparent)}
+.lyricLine{height:100px;padding-left:64px;font-size:49px;letter-spacing:1.5px;font-weight:500;transform-origin:64px center}
+.lyricLine .base{line-height:1.65}
+.lyricLine .sung{color:color-mix(in srgb,var(--accent) 74%,#fff)}
+.lineNumber{position:absolute;left:0;top:42px;width:20px;text-align:right;font:11px/1 Georgia,serif;letter-spacing:1px;color:#d5e9e08c}
+.lineTick{position:absolute;left:27px;top:49px;width:7px;height:1px;background:#d5e9e073}
+.lineSweep{position:absolute;left:64px;right:30px;bottom:12px;height:1px;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 65%,transparent),color-mix(in srgb,var(--accent) 12%,transparent),transparent)}
+.focusMark{left:28px;top:246px;width:5px;height:8px;border-radius:1px;transform:rotate(45deg);box-shadow:0 0 14px color-mix(in srgb,var(--accent) 45%,transparent)}
+.lyricAura{top:193px;left:45px;width:650px;height:117px;background:radial-gradient(ellipse at var(--glass-x,30%) 52%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 72%)}
+#lyricComet{top:287px;width:100px}
+.lyricFoot{margin-top:18px;padding:0 42px 0 64px;gap:17px;opacity:.65;letter-spacing:2px;font-size:11px}
+.verseRail{width:57px}
+.lyricCount{margin-left:auto;font-size:9px;letter-spacing:2px;opacity:.6}

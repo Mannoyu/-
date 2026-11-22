@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>音乐壁纸</title>
+<link rel="stylesheet" href="scene.css">
+<link rel="stylesheet" href="effects.css">
+<link rel="stylesheet" href="deck.css">
+<link rel="stylesheet" href="lyrics.css">
+<link rel="stylesheet" href="glass.css">
+<link rel="stylesheet" href="lyric-stage.css">
+<link rel="stylesheet" href="song.css">
+<link rel="stylesheet" href="pv-lyrics.css">
+<link rel="stylesheet" href="world.css">
+<link rel="stylesheet" href="performance.css">
+<link rel="stylesheet" href="template-frame.css">
+<link rel="stylesheet" href="template-lyrics.css">
+</head>
+<body>
+<main id="stage" aria-label="音乐壁纸动态预览">
+  <canvas id="background"></canvas><div class="shade"></div><div class="vignette"></div>
+  <canvas id="atmosphere" aria-hidden="true"></canvas>
+  <section id="coverGroup">
+    <div class="coverHalo" id="halo"></div>
+    <div id="deck" aria-label="动态壁纸卡片"></div>
+    <svg class="coverFx" viewBox="-55 -55 710 535" aria-hidden="true">
+      <defs><filter id="lightBlur" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4"/></filter></defs>
+      <g id="echoes"><rect x="1" y="1" width="598" height="423" rx="20"/><rect x="1" y="1" width="598" height="423" rx="20"/></g>
+      <rect class="orbitGlow" x="1" y="1" width="598" height="423" rx="20" pathLength="1" filter="url(#lightBlur)"/>
+      <rect class="orbitCore" x="1" y="1" width="598" height="423" rx="20" pathLength="1"/>
+      <circle id="orbitSpark" r="2.6" fill="#e7fff8"/>
+    </svg>
+    <div id="meter" hidden></div>
+    <div class="deckNav"><span id="deckDots"></span><span id="sectionName" hidden></span></div>
+  </section>
+  <section class="lyrics" aria-label="日中双语歌词">
+    <span id="verseNumber" hidden></span>
+    <div class="lyricWindow" id="lyricWindow"><div class="lyricAura" id="lyricAura" aria-hidden="true"></div><div class="lyricSpine" aria-hidden="true"></div><div id="lyricTrack"></div><div id="lyricComet" aria-hidden="true"></div><div class="focusMark" id="focusMark" aria-hidden="true"></div></div>
+    <span hidden><i id="verseProgress"></i></span>
+  </section>
+  <footer><div class="progress"><span id="clock">00:00</span><div class="rail"><div id="progressFill"></div></div><span id="endClock">03:38</span></div></footer>
+</main>
+<script type="module" src="motion.js"></script>
+</body></html>

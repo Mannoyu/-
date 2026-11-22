@@ -1,0 +1,28 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #161321; }
+#stage { position: relative; width: 1920px; height: 1080px; color: #fff8ef; }
+#image, #lyric-stage { position: absolute; inset: 0; }
+.record-header {
+  position: absolute; top: 56px; left: 80px; display: flex; align-items: center; gap: 20px;
+  color: #fff8ef; text-shadow: 0 2px 12px #100d1b;
+}
+.record-header strong { font: italic 30px/1.1 Georgia, serif; }
+.record-header span { border-left: 1px solid #fff8ef75; padding-left: 20px; font: 400 21px/1.1 "Microsoft YaHei", sans-serif; }
+.lyric {
+  position: absolute; left: 80px; bottom: 80px; width: 1210px; visibility: hidden;
+  text-shadow: 0 2px 14px #110e1be0, 0 12px 40px #110e1b85;
+}
+.lyric p { margin: 0; }
+.headline {
+  font: 500 60px/1.32 "Yu Gothic", "Microsoft YaHei", sans-serif;
+  letter-spacing: .02em; text-wrap: balance; overflow-wrap: anywhere;
+}
+.lyric .lead { font: 500 42px/1.35 "Yu Gothic", "Microsoft YaHei", sans-serif; margin-bottom: 9px; }
+.featured .headline { font: italic 115px/1.12 Georgia, serif; letter-spacing: -.045em; color: var(--ink-accent); }
+.featured .tail { font: 500 42px/1.35 "Yu Gothic", "Microsoft YaHei", sans-serif; margin-top: 8px; }
+.lyric .translation {
+  width: fit-content; max-width: 100%; margin-top: 22px; padding-left: 17px;
+  border-left: 2px solid var(--ink-accent); color: #fff9f2;
+  font: 400 34px/1.48 "Microsoft YaHei", sans-serif;
+}
+@media (prefers-reduced-motion: reduce) { .lyric { transform: none !important; } }
