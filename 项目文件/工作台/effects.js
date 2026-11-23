@@ -5,20 +5,23 @@ export function createEffects(){
   const c=canvas.getContext('2d');
   const core=document.querySelector('.orbitCore'),glow=document.querySelector('.orbitGlow');
   const spark=document.getElementById('orbitSpark');
-  const perimeter=core.getTotalLength();
+  // The current layout hides the orbit SVG. Chromium cannot measure hidden paths.
+  const perimeter=core.getClientRects().length?core.getTotalLength():0;
   const echoes=[...document.querySelectorAll('#echoes rect')];
   const comet=document.getElementById('lyricComet');
   const pvMode=document.querySelector('.lyrics').classList.contains('pv-mode');
   return (t,{beat,bass=0,treble=0,progress,index,k,lines})=>{
     // A slow travelling highlight traces the frame, rather than covering the artwork.
-    const loop=t/10;
-    core.style.strokeDashoffset=`${-loop}`;
-    glow.style.strokeDashoffset=`${-loop+.012}`;
-    const point=core.getPointAtLength(((loop+.085)%1)*perimeter);
-    spark.setAttribute('cx',point.x);spark.setAttribute('cy',point.y);
-    spark.style.opacity=`${.5+.5*beat}`;
-    spark.setAttribute('r',(2.6+beat*1.8*k).toFixed(2));
-    glow.style.opacity=`${.5+bass*.45*k}`;
+    if(perimeter){
+      const loop=t/10;
+      core.style.strokeDashoffset=`${-loop}`;
+      glow.style.strokeDashoffset=`${-loop+.012}`;
+      const point=core.getPointAtLength(((loop+.085)%1)*perimeter);
+      spark.setAttribute('cx',point.x);spark.setAttribute('cy',point.y);
+      spark.style.opacity=`${.5+.5*beat}`;
+      spark.setAttribute('r',(2.6+beat*1.8*k).toFixed(2));
+      glow.style.opacity=`${.5+bass*.45*k}`;
+    }
     echoes.forEach((el,j)=>{
       const phase=((t+j*1.25)%2.5)/2.5;
       const expand=1+phase*.17;

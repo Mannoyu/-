@@ -41,7 +41,7 @@ export function createPvLyrics(root,lyrics,choruses,{emphasis=[],style={},effect
   for(const [key,value] of Object.entries(LYRIC_STYLE))container.style.setProperty(`--pv-${key}`,typeof value==='number'?`${value}px`:value);
   const normalize=text=>text.replace(/\s+/g,'');
   const layoutEntries=Object.entries(LYRIC_LAYOUTS);
-  const styles=lyrics.map(({style:line})=>({fontSize:line?.fontSize||style.fontSize,align:line?.align||style.align,
+  const styles=lyrics.map(({style:line})=>({fontSize:line?.fontSize||style.fontSize,align:line?.align||style.align,color:line?.color||style.color,duration:line?.duration??style.duration??.42,delay:line?.delay??style.delay??0,
     effect:line?.effect&&line.effect!=='default'?line.effect:style.effect,emphasis:line?.emphasis?.length?line.emphasis:style.emphasis}));
   const overrides=lyrics.map((line,index)=>styles[index].emphasis?.length?undefined:LYRIC_LAYOUTS[line.text]||layoutEntries.find(([text])=>normalize(text)===normalize(line.text))?.[1]);
   const plans=lyrics.map((line,i)=>overrides[i]?.parts||layoutFor(line.text,line.kind,styles[i].emphasis||emphasis));
@@ -72,6 +72,7 @@ export function createPvLyrics(root,lyrics,choruses,{emphasis=[],style={},effect
   scenes.forEach(({scene},index)=>{
     scene.style.visibility='hidden';
     const {align}=styles[index];
+    if(styles[index].color)scene.querySelectorAll('.pvRow,.pvTranslation,.pvInk').forEach(node=>node.style.color=styles[index].color);
     if(align){
       scene.querySelectorAll('.pvRow, .pvTranslation').forEach(element=>{element.style.textAlign=align;});
       scene.querySelector('.pvTranslation').style.justifyContent={left:'flex-start',center:'center',right:'flex-end'}[align];
@@ -122,10 +123,11 @@ export function createPvLyrics(root,lyrics,choruses,{emphasis=[],style={},effect
     orbit.style.opacity=String(semantic==='distance'?opening*(1-exit):0);
     orbit.style.transform=`scaleX(${.55+separation*.45}) rotate(-18deg)`;
     const entryEffect=styles[index].effect;
-    const customEntry=entryEffect==='fade'||entryEffect==='rise';
-    const entrance=customEntry?out(local/.42):1;
-    scene.style.opacity=String(entrance*(1-exit*.8));
-    if(entryEffect==='rise')scene.style.translate=`0 ${(1-entrance)*16}px`;
+    const customEntry=entryEffect&&entryEffect!=='default';
+    const entrance=entryEffect==='none'?1:customEntry?out((local-styles[index].delay)/styles[index].duration):1;
+    scene.style.opacity=String((time<line.time||time>=line.end?0:1)*entrance*(1-exit*.8));
+    scene.style.translate=entryEffect==='rise'?`0 ${(1-entrance)*16}px`:entryEffect==='slide'?`${(1-entrance)*80}px 0`:'none';
+    scene.style.scale=entryEffect==='zoom'?String(.7+.3*entrance):'1';
     const staticGlyphs=!contour&&effect===0&&(semantic==='plain'||semantic==='fracture')&&local>=LYRIC_STYLE.entrance+.18+(rows.length-1)*.085;
     rows.forEach(({row,chars,size},r)=>{
       const direction=1;

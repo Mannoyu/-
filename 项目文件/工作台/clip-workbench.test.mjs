@@ -6,6 +6,7 @@ import path from 'node:path';
 import {openWorkbench} from './workbench-store.mjs';
 import {removeManaged} from './workbench-storage.mjs';
 import {legacyClips,splitClip,resolveClipScene,clipSourceTime} from './clip-editor-model.mjs';
+import {normalizeElements,entranceAt} from './scene-editor-model.mjs';
 
 function fixture(t){
   const base=fs.mkdtempSync(path.join(os.tmpdir(),'clip-workbench-')),root=path.join(base,'中文工作台');fs.mkdirSync(root);
@@ -13,6 +14,49 @@ function fixture(t){
   const store=openWorkbench(root,{},{});return {root,store};
 }
 const snapshot=(root,key)=>JSON.parse(fs.readFileSync(path.join(root,'workspace/scenes',`${key}.json`),'utf8'));
+
+test('editable layers persist in drafts, templates and export without replacing subtitles',t=>{
+  const {root,store}=fixture(t);let view=store.view();
+  view.draft.elements=normalizeElements({cards:{animation:'slide',delay:2,duration:1.5,x:80,cardLayout:'glass-filmstrip'},title:{animation:'zoom',visible:false,ink:'flow'}});
+  view.draft.showSongTitle=true;
+  view.draft.lyrics=[{time:1,end:5,text:'新增字幕',translation:'译文',kind:'lyric',style:{effect:'zoom',delay:.2,duration:1,color:'#ff9900'}}];
+  view=store.update({action:'save',draft:view.draft});
+  const data=snapshot(root,view.key);
+  assert.equal(data.elements.title.ink,'flow');
+  assert.equal(data.elements.cards.cardLayout,'glass-filmstrip');
+  assert.deepEqual(data.elements,view.draft.elements);assert.equal(data.lyrics.find(l=>l.text==='新增字幕').style.effect,'zoom');
+  assert.equal(data.lyrics.find(l=>l.text==='新增字幕').style.fontSize,0);
+  assert.equal(data.titlePersistent,true);assert.equal(store.exportDraft(view.draft.id).project.snapshot,view.key);
+  assert.deepEqual(openWorkbench(root,{},{}).view().draft.elements,view.draft.elements);
+  view=store.update({action:'template-save',name:'可编辑图层'});
+  const template=view.templates.find(t=>t.name==='可编辑图层');
+  view.draft.elements.cards.x=-20;delete view.draft.elements.cards.cardLayout;delete view.draft.elements.title.ink;store.update({action:'save',draft:view.draft});
+  view=store.update({action:'template-apply',templateId:template.id});assert.equal(view.draft.elements.cards.x,80);
+  assert.equal(view.draft.elements.title.ink,'flow');
+  assert.equal(view.draft.elements.cards.cardLayout,'glass-filmstrip');
+});
+
+test('entrances are deterministic on seeking and constrain invalid saved values',()=>{
+  const value={animation:'rise',delay:2,duration:1};
+  assert.equal(entranceAt(value,1).alpha,0);assert.equal(entranceAt(value,3).alpha,1);
+  assert.deepEqual(entranceAt(value,2.5),entranceAt(value,2.5));assert.equal(entranceAt({...value,animation:'none'},0).alpha,1);
+  const normalized=normalizeElements({cards:{x:Infinity,scale:100,opacity:-1,animation:'bad'}}).cards;
+  assert.equal(normalized.x,0);assert.equal(normalized.scale,4);assert.equal(normalized.opacity,0);assert.equal(normalized.animation,'default');
+});
+
+test('legacy title templates keep the title marker and default typography after saving',t=>{
+  const {root,store}=fixture(t);let view=store.view();
+  view.draft.showSongTitle=true;view.draft.lyrics=[];view.draft.lyricStyle={};
+  view=store.update({action:'save',draft:view.draft});
+  assert.equal(snapshot(root,view.key).lyrics[0].kind,'title');
+  assert.equal(view.draft.elements.title.fontSize,0);
+  assert.equal(view.draft.elements.artist.fontSize,0);
+  view=store.update({action:'template-save',name:'原有标题预设'});
+  const template=view.templates.find(t=>t.name==='原有标题预设');
+  view=store.update({action:'template-apply',templateId:template.id});
+  assert.equal(snapshot(root,view.key).lyrics[0].kind,'title');
+  assert.equal(view.draft.lyricStyle.fontSize,0);
+});
 
 test('legacy swaps and split continuity survive independent clips; deleted gaps stay empty',()=>{
   let count=0;const clips=legacyClips({cues:[10,20],backgrounds:[{assetId:'a',start:1,end:8,focus:.5,zoom:1},{assetId:'b',start:0,end:6,focus:.5,zoom:1}]},30,()=>`c${count++}`);

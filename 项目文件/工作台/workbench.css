@@ -61,7 +61,11 @@ small,kbd{font-family:var(--ui-mono)}kbd{margin-left:6px;padding:1px 4px;border:
 .monitor:fullscreen{border:0;border-radius:0}.monitor-well{flex:1;min-height:0;display:grid;place-items:center;container-type:size;background:var(--ui-monitor)}
 #monitor-surface{position:relative;width:min(100%,177.7778cqh);aspect-ratio:16/9;overflow:hidden;background:var(--ui-monitor)}
 #preview{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
-#card-drag{position:absolute;border:1px solid transparent;cursor:move;touch-action:none;border-radius:5px;z-index:2}#card-drag:hover,#card-drag:focus-visible,#card-drag.dragging{border-color:var(--accent);background:#9dbbfa08}#card-drag span{display:none;position:absolute;left:0;top:-24px;color:var(--ui-on-accent);background:var(--accent);font-size:11px;padding:2px 6px;border-radius:3px}#card-drag:hover span,#card-drag.dragging span{display:block}
+#scene-select{position:absolute;inset:0;z-index:3;touch-action:none;cursor:crosshair;outline-offset:-2px}
+#scene-box{position:absolute;border:1px solid var(--accent);cursor:move;min-width:8px;min-height:8px;box-shadow:0 0 0 1px #080a0e50}
+#scene-box-label{position:absolute;bottom:100%;left:-1px;background:var(--accent);color:var(--ui-on-accent);padding:2px 6px;font-size:10px;white-space:nowrap;pointer-events:none}
+#scene-resize{position:absolute;right:-5px;bottom:-5px;padding:0;width:10px;height:10px;min-height:10px;border:1px solid var(--ui-on-accent);border-radius:1px;background:var(--accent);cursor:nwse-resize}
+#element-title-fields,#element-card-fields{display:grid;gap:12px}
 .transport{border-top:1px solid var(--ui-border-subtle)}.play-controls button{min-width:28px;min-height:32px;padding:4px;background:transparent;border-color:transparent}#play{min-width:36px;color:var(--accent);font-size:17px}
 #clock,#duration{white-space:nowrap}#preview-quality{min-width:55px;text-align:right;white-space:nowrap}#scrub{flex:1}
 #timeline-resize{cursor:ns-resize;touch-action:none;display:grid;place-items:center}#timeline-resize:before{content:'';height:2px;width:40px;border-radius:2px;background:#4c515c}#timeline-resize:hover:before{background:var(--accent)}

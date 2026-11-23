@@ -48,7 +48,7 @@
       </aside>
       <section class="panel monitor" id="monitor" aria-label="画面预览">
         <div class="monitor-head"><strong id="preview-title">画面预览</strong><div class="monitor-actions"><span>1080p / 60 fps</span><button id="fullscreen" type="button" hidden>全屏</button></div></div>
-        <div class="monitor-well"><div id="monitor-surface"><iframe id="preview" title="视频画面"></iframe><div id="card-drag" role="button" tabindex="0" aria-label="拖动调整当前片段的卡片位置" hidden><span>拖动卡片</span></div></div></div>
+        <div class="monitor-well"><div id="monitor-surface"><iframe id="preview" title="视频画面"></iframe><div id="scene-select" tabindex="0" aria-label="点击选择画面元素，方向键移动所选元素"><div id="scene-box" hidden><span id="scene-box-label"></span><button id="scene-resize" type="button" aria-label="缩放所选元素"></button></div></div></div></div>
         <div class="transport">
           <div class="play-controls">
             <button id="previous-frame" type="button" aria-label="上一帧" title="上一帧">‹</button>
@@ -63,8 +63,23 @@
         <audio id="audio" preload="auto"></audio>
       </section>
       <aside class="panel inspector">
-        <nav class="panel-switch" aria-label="属性区"><button type="button" data-panel="background-settings" aria-pressed="true">背景</button><button type="button" data-panel="lyric-settings" aria-pressed="false">字幕</button><button type="button" data-panel="layout-settings" aria-pressed="false">布局</button></nav>
-        <div id="background-settings" class="panel-body">
+        <nav class="panel-switch" aria-label="属性区"><button type="button" data-panel="element-settings" aria-pressed="true">画面</button><button type="button" data-panel="background-settings" aria-pressed="false">片段</button><button type="button" data-panel="lyric-settings" aria-pressed="false">字幕</button><button type="button" data-panel="layout-settings" aria-pressed="false">布局</button></nav>
+        <div id="element-settings" class="panel-body">
+          <label>画面图层<select id="element-choice"></select></label>
+          <p class="workbench-hint">点击画面选中，拖动移动，右下角缩放。未出场或被遮挡的元素可在此选择。</p>
+          <label class="inline-check"><input id="element-visible" type="checkbox">显示此图层</label>
+          <div class="field-pair"><label>横向偏移（像素）<input id="element-x" type="number" min="-1920" max="1920"></label><label>纵向偏移（像素）<input id="element-y" type="number" min="-1080" max="1080"></label><label>大小<input id="element-scale" type="number" min="0.1" max="4" step="0.05"></label><label>旋转（度）<input id="element-rotation" type="number" min="-180" max="180"></label><label>不透明度<input id="element-opacity" type="number" min="0" max="1" step="0.05"></label></div>
+          <div id="element-title-fields"><label>标题文字<textarea id="element-title" rows="2"></textarea></label><label>副标题 / 歌手<input id="element-artist"></label><div class="field-pair"><label>字号<input id="element-fontSize" type="number" min="12" max="200"></label><label>文字颜色<input id="element-color" type="color"></label></div><label class="inline-check"><input id="element-persistent" type="checkbox">整曲保留标题</label></div>
+          <label id="element-ink-field" hidden>文字效果<select id="element-ink"><option value="original">原始效果</option><option value="flow">字内流光</option></select></label>
+          <label id="element-cardLayout-field" hidden>卡片布局<select id="element-cardLayout"><option value="stack">叠放</option><option value="filmstrip">底片选片</option><option value="glass-filmstrip">A 版 · 玻璃片名</option></select></label>
+          <div class="section-heading"><h2>出场动画</h2></div>
+          <div id="element-card-fields" hidden><label>卡片标题<input id="element-cardTitle" maxlength="120" placeholder="跟随素材名称"></label><label id="element-cardNumber-field">卡片编号<input id="element-cardNumber" maxlength="20" placeholder="自动编号"></label><label id="element-cardCollection-field">卡片角标<input id="element-cardCollection" maxlength="80"></label><label class="inline-check"><input id="element-captionVisible" type="checkbox">显示卡片文字</label></div>
+          <label>动画效果<select id="element-animation"></select></label>
+          <div class="field-pair"><label>开始（秒）<input id="element-delay" type="number" min="0" max="3600" step="0.05"></label><label>时长（秒）<input id="element-duration" type="number" min="0.0166667" max="10" step="0.05"></label></div>
+          <div class="button-row"><button id="element-replay" type="button">预览出场</button><button id="element-reset" type="button">重置图层</button></div>
+          <button id="element-detail" type="button">编辑对应内容</button>
+        </div>
+        <div id="background-settings" class="panel-body" hidden>
           <label>所选片段<select id="slots"></select></label>
           <div id="clip-fields">
           <div class="section-heading"><h2>时间线位置</h2><span id="clip-end-label"></span></div>
@@ -92,7 +107,9 @@
             <button id="remove-lyric">移除此句</button>
           </div>
           <div class="field-pair"><label>字号<input id="font-size" type="number" min="22" max="130" placeholder="随模板"></label><label>对齐<select id="lyric-align"><option value="">随模板</option><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select></label></div>
-          <label>入场<select id="lyric-effect"><option value="default">随模板</option><option value="fade">轻淡入</option><option value="rise">上浮淡入</option></select></label>
+          <label>入场<select id="lyric-effect"><option value="default">随模板</option><option value="none">无动画</option><option value="fade">轻淡入</option><option value="rise">上浮淡入</option><option value="slide">从右进入</option><option value="zoom">缩放进入</option></select></label>
+          <div class="field-pair"><label>入场延迟（秒）<input id="lyric-delay" type="number" min="0" max="10" step="0.05"></label><label>动画时长（秒）<input id="lyric-duration" type="number" min="0.0166667" max="10" step="0.05"></label><label>文字颜色<input id="lyric-color" type="color"></label></div>
+          <button id="lyric-replay" type="button">预览此句动画</button>
         </div>
       </aside>
     </div>

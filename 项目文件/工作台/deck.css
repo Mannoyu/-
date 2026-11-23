@@ -24,6 +24,54 @@
 .wallCard--frosted .cardNumber,.wallCard--frosted .cardSceneName,.wallCard--frosted .cardCollection{
   color:#edf7fc;text-shadow:0 1px 3px #07121c,0 0 5px #07121c;
 }
+#coverGroup.coverGroup--filmstrip{top:19%;width:var(--filmstrip-width)}
+.coverGroup--filmstrip #deck{height:590px;aspect-ratio:auto}
+.coverGroup--filmstrip .wallCard{
+  width:100%;height:428px;transform-origin:top left;
+  border-radius:10px;border-color:#dae7df80;background:#a9bcb9;
+  box-shadow:0 4px 12px #071b2759,0 20px 44px #071b2752;
+}
+.coverGroup--filmstrip .wallCard::before{display:none}
+.coverGroup--filmstrip .cardSurface{inset:5px;border-radius:5px;box-shadow:none}
+.coverGroup--filmstrip .cardInfo{
+  left:5px;right:5px;bottom:5px;height:43px;padding:0 15px;border-radius:0 0 5px 5px;
+  background:linear-gradient(transparent,#101e26d9);pointer-events:none;
+}
+.coverGroup--filmstrip .cardInfo span{color:#f5faf8}
+.coverGroup--filmstrip .cardShine,.coverGroup--filmstrip .cardReflection{display:none}
+#coverGroup.coverGroup--eject{left:7.25%}
+.coverGroup--eject #deck{height:calc(var(--filmstrip-card-height) * 1.315 + 30px)}
+.coverGroup--eject .wallCard{
+  height:var(--filmstrip-card-height);border:0;border-radius:6px;box-shadow:none;background:transparent;
+}
+.coverGroup--eject .cardSurface::after{display:none}
+.coverGroup--eject .cardSurface{
+  inset:0;border-radius:inherit;
+}
+.coverGroup--eject .cardInfo{
+  inset:auto 0 0;height:43px;padding:0 15px;border-radius:0 0 6px 6px;
+}
+.filmstripRowCard{pointer-events:none}
+#coverGroup.coverGroup--glass{top:24.5%;left:8.6%;width:var(--glass-card-width)}
+.coverGroup--glass #deck{height:var(--glass-deck-height);aspect-ratio:auto}
+.coverGroup--glass .wallCard{height:var(--glass-card-height);transform-origin:top left;border:0;border-radius:10px;background:transparent}
+.coverGroup--glass .wallCard::before,
+.coverGroup--glass .cardShine,
+.coverGroup--glass .cardReflection,
+.coverGroup--glass .cardInfo span:not(.cardSceneName){display:none}
+.coverGroup--glass .cardSurface{inset:0;border-radius:inherit;box-shadow:none}
+.coverGroup--glass .cardSurface::after{border:1.5px solid #e1eeeac4;box-shadow:none;opacity:var(--glass-caption,0)}
+.coverGroup--glass .cardInfo{inset:auto 0 0;height:83px;align-items:end;padding:0 22px 21px;pointer-events:none}
+.coverGroup--glass .cardSceneName{
+  padding:0;border:0;color:#eef6f4;
+  font:800 36px/1.15 'Noto Sans SC','Microsoft YaHei UI',sans-serif;letter-spacing:.055em;
+}
+.coverGroup--glass .glass-ready .cardSceneName{color:transparent}
+.coverGroup--glass .filmstripRowCard .cardInfo{display:none}
+@media (forced-colors:active){
+  .coverGroup--glass .cardInfo canvas{display:none}
+  .coverGroup--glass .glass-ready .cardSceneName{color:CanvasText}
+}
 .topline,.lyricLabel,.lyricFoot{display:none}
 footer{justify-content:center}
 .coverFx{display:none}

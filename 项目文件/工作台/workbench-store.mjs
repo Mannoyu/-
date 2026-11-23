@@ -5,6 +5,7 @@ import {SONG} from './song-data.js';
 import {removeImportedFiles, removeManaged, storageBusy, maintainStorage} from './workbench-storage.mjs';
 import {initialSession} from 'file:///C:/Users/123/.codex/skills/motion-showreel/scripts/lib/editor-model.mjs';
 import {normalizeClips} from './clip-editor-model.mjs';
+import {normalizeElements} from './scene-editor-model.mjs';
 
 const defaultLayout = {cardX:0, cardY:0, cardScale:1, lyricX:0, lyricY:0, lyricScale:1};
 const baseline = {id:'original', name:'模板 01', layout:defaultLayout, lyricStyle:{}};
@@ -22,8 +23,10 @@ function layout(value) {
 
 function style(value) {
   return {
-    fontSize:number(value?.fontSize,22,130,0),
-    effect:['default','fade','rise'].includes(value?.effect)?value.effect:'default',
+    fontSize:value?.fontSize>0?number(value.fontSize,22,130,0):0,
+    effect:['default','none','fade','rise','slide','zoom'].includes(value?.effect)?value.effect:'default',
+    duration:number(value?.duration,1/60,10,undefined),delay:number(value?.delay,0,10,undefined),
+    color:/^#[\da-f]{6}$/i.test(value?.color)?value.color:undefined,
     align:['left','center','right'].includes(value?.align)?value.align:undefined,
     emphasis:Array.isArray(value?.emphasis)?value.emphasis.slice(0,12).map(word=>text(word)).filter(Boolean):undefined,
   };
@@ -82,6 +85,7 @@ export function openWorkbench(root, originalProject, originalSession) {
     return {...previous,name:text(input.name,previous.name,100).trim()||previous.name,title:text(input.title,previous.title,100),artist:text(input.artist,previous.artist,100),
       updatedAt:new Date().toISOString(),audioId,lyrics,backgrounds,cues,...(Object.hasOwn(input,'clips')?{clips:normalizeClips(input.clips,findAsset)}:{}),layout:layout(input.layout),lyricStyle:style(input.lyricStyle),
       showSongTitle:typeof input.showSongTitle==='boolean'?input.showSongTitle:previous.showSongTitle,
+      elements:normalizeElements(input.elements),
       templateId:state.templates.some(template=>template.id===input.templateId)?input.templateId:baseline.id,
       export:{mode:['single','repeat','minutes'].includes(input.export?.mode)?input.export.mode:'single',value:Math.round(number(input.export?.value,1,3600,1))}};
   }
@@ -98,11 +102,11 @@ export function openWorkbench(root, originalProject, originalSession) {
     const visibleLyrics=draft.lyrics.filter(line=>line.time<duration).map(line=>({...line,end:Math.min(line.end,duration)}));
     const firstLine=visibleLyrics[0];
     const opening={time:0,end:firstLine?.time??duration,text:draft.title,translation:draft.artist,kind:'intro'};
-    const lyrics=draft.showSongTitle?[{...opening,end:duration,text:draft.title||draft.name,kind:'title'}]:
+    const lyrics=draft.showSongTitle&&!visibleLyrics.length?[{...opening,end:duration,text:draft.title||draft.name,kind:'title'}]:
       firstLine?.time===0?visibleLyrics:[opening,...visibleLyrics];
     return {...SONG,title:draft.title||draft.name,artist:draft.artist,duration,videos,lyrics,cues:draft.cues,
       audio:audio?.audio||SONG.audio,features:audio?.features,sections:audio?[]:SONG.sections,
-      ...(independent?{clips:draft.clips}:{}),layout:draft.layout,lyricStyle:draft.lyricStyle,subtitle:audio?'':SONG.subtitle,tagline:audio?'':SONG.tagline,emphasis:audio?[]:SONG.emphasis};
+      ...(independent?{clips:draft.clips}:{}),elements:normalizeElements(draft.elements),titlePersistent:draft.showSongTitle===true,layout:draft.layout,lyricStyle:draft.lyricStyle,subtitle:audio?'':SONG.subtitle,tagline:audio?'':SONG.tagline,emphasis:audio?[]:SONG.emphasis};
   }
   function snapshot(draft) {
     const data=scene(draft);
@@ -178,7 +182,7 @@ export function openWorkbench(root, originalProject, originalSession) {
         if(!name)throw new Error('请输入模板名称');
         const current=input.action==='template-update'?state.templates.findIndex(template=>template.id===input.templateId&&template.id!==baseline.id):-1;
         if(input.action==='template-update'&&current<0)throw new Error('找不到可更新的模板');
-        const next={id:state.templates[current]?.id??randomUUID(),name,layout:copy(draft.layout),lyricStyle:copy(draft.lyricStyle),showSongTitle:draft.showSongTitle};
+        const next={id:state.templates[current]?.id??randomUUID(),name,layout:copy(draft.layout),lyricStyle:copy(draft.lyricStyle),elements:normalizeElements(draft.elements),showSongTitle:draft.showSongTitle};
         if(input.includeBackgrounds===true){next.backgrounds=copy(draft.backgrounds);if(Array.isArray(draft.clips))next.clips=copy(draft.clips);}
         if(current<0)state.templates.push(next);
         else state.templates[current]=next;
@@ -186,7 +190,7 @@ export function openWorkbench(root, originalProject, originalSession) {
       }else if(input.action==='template-apply'||input.action==='template-preview'){
         const template=state.templates.find(item=>item.id===input.templateId);
         if(!template)throw new Error('找不到模板');
-        const next={...draft,templateId:template.id,layout:copy(template.layout),lyricStyle:copy(template.lyricStyle),showSongTitle:template.showSongTitle===true};
+        const next={...draft,templateId:template.id,layout:copy(template.layout),lyricStyle:copy(template.lyricStyle),elements:normalizeElements(template.elements),showSongTitle:template.showSongTitle===true};
         if(template.backgrounds){next.backgrounds=copy(template.backgrounds);delete next.clips;}
         if(Array.isArray(template.clips))next.clips=copy(template.clips);
         if(input.action==='template-preview')return {key:snapshot(next).key};

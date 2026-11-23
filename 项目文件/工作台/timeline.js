@@ -7,7 +7,7 @@ export const AUDIO = SONG.audio;
 export const CHORUSES = SONG.sections;
 export const CARD_ORDER = SONG.videos.map((_,i)=>i);
 export const CARD_CUES = SONG.cues.map((at,i)=>({at,target:CARD_ORDER[(i+1)%CARD_ORDER.length]}));
-export const INTRO = {landings:[177/60,140/60,122/60],fly:.62,chrome:205/60};
+export const INTRO = {cardStart:.3,cardStagger:.17,cardTravel:.78,chrome:205/60};
 export const SHOTS = [
   {start:0,label:'INTRO'},
   ...SONG.sections.flatMap((s,i)=>[{start:s.start,label:`CHORUS ${i+1}`},{start:s.end,label:'VERSE'}]),

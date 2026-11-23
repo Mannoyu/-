@@ -6,7 +6,7 @@
 #world-title small span{color:var(--accent);font-size:20px;font-weight:400;letter-spacing:2px}
 #world-title.world-title-persistent{overflow-wrap:anywhere}
 @supports (background-clip:text){
-  #world-title.world-title-persistent strong,#world-title.world-title-persistent small{
+  #world-title.world-title-persistent strong:not(.title-ink-flow),#world-title.world-title-persistent small{
     color:transparent;text-shadow:none;
     background-image:radial-gradient(ellipse at 36% 44%,#7ac8f0 0%,transparent 43%),
       radial-gradient(ellipse at 66% 57%,#c2a7ea 0%,transparent 45%),linear-gradient(#f4f5fa,#f4f5fa);
@@ -14,6 +14,32 @@
     background-position:var(--title-current-blue,0%) var(--title-current-blue,0%),var(--title-current-violet,100% 100%),0 0;
     background-clip:text;
     filter:drop-shadow(0 3px 6px #06101d);
+  }
+  #world-title strong.title-ink-flow{
+    --title-ink-base:#e9f2ff;
+    --title-ink-blue:color-mix(in srgb,var(--title-ink-base),#7ac8f0 66%);
+    --title-ink-violet:color-mix(in srgb,var(--title-ink-base),#c2a7ea 55%);
+    text-shadow:none;
+    filter:drop-shadow(0 3px 6px #06101d);
+  }
+  #world-title strong.title-ink-flow>span{
+    /* Italic strokes can extend past the text advance on either side. */
+    --ink-edge:.22em;
+    width:fit-content;
+    max-width:calc(100% + 2 * var(--ink-edge));
+    margin-inline:calc(-1 * var(--ink-edge));
+    padding-inline:var(--ink-edge);
+    overflow-wrap:anywhere;
+    color:transparent;
+    background-image:linear-gradient(90deg,
+      var(--title-ink-base) 0% 4%,var(--title-ink-blue) 12%,#fbfdff 19%,var(--title-ink-violet) 27%,var(--title-ink-base) 42% 54%,
+      var(--title-ink-blue) 62%,#fbfdff 69%,var(--title-ink-violet) 77%,var(--title-ink-base) 92% 100%);
+    background-size:200% 100%;
+    background-position:var(--title-ink-position,100%) center;
+    background-clip:text;
+  }
+  #world-title strong.title-ink-flow>span:first-child:not(:last-child){
+    background-position:calc(var(--title-ink-position,100%) + 22%) center;
   }
 }
 
@@ -47,3 +73,4 @@
   box-shadow: 0 0 8px #9ddaffaa;
 }
 .instrumental-scene #endClock { color: #b8c5cf; }
+.title-with-subtitles .lyrics{top:53%}

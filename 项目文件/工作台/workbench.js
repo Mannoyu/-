@@ -1,5 +1,6 @@
 import {legacyClips,clipEnd} from './clip-editor-model.mjs';
 import {createClipEditor} from './workbench-clips.js';
+import {createElementEditor} from './workbench-elements.js';
 const get = id => document.getElementById(id);
 const audio = get('audio');
 const preview = get('preview');
@@ -19,6 +20,11 @@ let queue = Promise.resolve();
 let assetFilter='all',assetSearch='',waveAudio,lastDraft,past=[],future=[];
 const clipEditor=createClipEditor({state:()=>state,index:()=>slotIndex,select:index=>{slotIndex=index;},time:()=>savedPosition,
   save,paintSlot,paintTimeline,seek,stamp,notify,panel:switchPanel,pause:()=>audio.pause()});
+const elementEditor=createElementEditor({state:()=>state,save,seek,notify,panel:switchPanel,pause:()=>audio.pause(),play:()=>audio.play(),
+  playing:()=>!audio.paused,
+  selectLyric:()=>selectLyric(state.draft.lyrics.findIndex(line=>savedPosition>=line.time&&savedPosition<line.end)),
+  selectBackground:()=>{slotIndex=state.draft.clips.findIndex(clip=>savedPosition>=clip.start&&savedPosition<clipEnd(clip));paintSlot();}});
+elementEditor.bind();
 
 function notify(message, error = false) {
   status.textContent = message;
@@ -79,7 +85,7 @@ function drawTime(time) {
   }
   drawing = true;
   const renderScene=sceneKey;
-  Promise.resolve(player.render(savedPosition)).then(()=>{if(renderScene===sceneKey)clipEditor.updateCardHandle();}).catch(error => {if(renderScene===sceneKey)notify(error.message,true);}).finally(() => {
+  Promise.resolve(player.render(savedPosition)).then(()=>{if(renderScene===sceneKey)elementEditor.update();}).catch(error => {if(renderScene===sceneKey)notify(error.message,true);}).finally(() => {
     if(renderScene!==sceneKey)return;
     drawing = false;
     if (queuedDraw) {
@@ -102,7 +108,7 @@ function loadScene(key, title='画面预览') {
   sceneKey = key;
   readyScene = undefined;
   drawing=false;queuedDraw=false;
-  get('card-drag').hidden=true;
+  get('scene-box').hidden=true;
   preview.src = `/project/index.html?draft=${key}&render=1&w=1920&h=1080`;
   previewSuspended=false;
 }
@@ -221,6 +227,7 @@ function paintState(next,{reset=false,keep=false}={}) {
   }));
   paintSlot();
   paintLyric();
+  elementEditor.paint();
   for (const [name,value] of Object.entries(draft.layout)) get(name).value=value;
   paintTimeline();
   if(waveAudio!==draft.audioId){waveAudio=draft.audioId;clipEditor.loadWave();}
@@ -304,6 +311,7 @@ function paintLyric() {
   get('font-size').value=style.fontSize||'';
   get('lyric-align').value=style.align||'';
   get('lyric-effect').value=style.effect||'default';
+  get('lyric-delay').value=style.delay??0;get('lyric-duration').value=style.duration??.42;get('lyric-color').value=style.color||'#ffffff';
   if (!line) return;
   get('lyric-time').value=line.time;
   get('lyric-end').value=line.end;
@@ -453,6 +461,7 @@ audio.addEventListener('play',()=>{
   get('play').textContent='Ⅱ';
   get('play').setAttribute('aria-label','暂停');
   get('preview-quality').textContent='实时播放';
+  elementEditor.update();
   preview.contentWindow?.setWorkbenchPlaying?.(true);
   let lastFrame = -1;
   const tick = () => {
@@ -570,7 +579,10 @@ bind('lyric-choice','change',event=>selectLyric(Number(event.target.value)));
 bind('add-lyric','click',()=>{
   const time=Number(savedPosition.toFixed(3));
   if(state.draft.lyrics.some(line=>Math.abs(line.time-time)<.025))throw new Error('此时间已有歌词，请选择现有歌词编辑');
-  const entry={time,end:Math.min(state.duration,time+4),text:'新歌词',translation:'',kind:'lyric'};
+  const next=state.draft.lyrics.find(line=>line.time>time);
+  const previous=state.draft.lyrics.findLast(line=>line.time<time);
+  if(previous&&previous.end>time)previous.end=time;
+  const entry={time,end:Math.min(state.duration,next?.time??state.duration,time+4),text:'新字幕',translation:'',kind:'lyric'};
   state.draft.lyrics.push(entry);state.draft.lyrics.sort((first,second)=>first.time-second.time);lineIndex=state.draft.lyrics.indexOf(entry);
   return save();
 });
@@ -585,7 +597,7 @@ for (const [id,key] of Object.entries({'lyric-time':'time','lyric-end':'end','ly
     return save();
   });
 }
-for (const [id,key,parse] of [['font-size','fontSize',value=>value?Number(value):undefined],['lyric-align','align',String],['lyric-effect','effect',String],['emphasis','emphasis',value=>value.split(/[、,，]+/).map(word=>word.trim()).filter(Boolean)]]) {
+for (const [id,key,parse] of [['font-size','fontSize',value=>value?Number(value):undefined],['lyric-align','align',String],['lyric-effect','effect',String],['lyric-delay','delay',Number],['lyric-duration','duration',Number],['lyric-color','color',String],['emphasis','emphasis',value=>value.split(/[、,，]+/).map(word=>word.trim()).filter(Boolean)]]) {
   bind(id,'change',event=>{
     const line=state.draft.lyrics[lineIndex];
     const style=line?(line.style??={}):state.draft.lyricStyle;
@@ -593,6 +605,7 @@ for (const [id,key,parse] of [['font-size','fontSize',value=>value?Number(value)
     return save();
   });
 }
+bind('lyric-replay','click',()=>{const line=state.draft.lyrics[lineIndex];seek(line?.time??0);return audio.play();});
 bind('lrc-open','click',()=>get('lrc-file').click());
 bind('lrc-file','change',async event=>{
   const file=event.target.files[0];

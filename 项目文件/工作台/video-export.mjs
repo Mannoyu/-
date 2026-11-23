@@ -35,7 +35,7 @@ async function fingerprint(root, project, browserVersion, encoder) {
   const SONG = project.snapshot
     ? JSON.parse(await fs.readFile(path.join(root, 'workspace', 'scenes', `${project.snapshot}.json`), 'utf8'))
     : (await import(`${pathToFileURL(path.join(root, 'song-data.js'))}?v=${randomUUID()}`)).SONG;
-  const sourceFiles = (await fs.readdir(root)).filter(name => (/\.(?:css|html|js)$/.test(name)||name==='clip-editor-model.mjs') && !/^(video-export-|workbench[-.]|ui-)/.test(name)).sort();
+  const sourceFiles = (await fs.readdir(root)).filter(name => (/\.(?:css|html|js)$/.test(name)||['clip-editor-model.mjs','scene-editor-model.mjs'].includes(name)) && !/^(video-export-|workbench[-.]|ui-)/.test(name)).sort();
   hash.update(await fs.readFile(new URL(import.meta.url)));
   for (const name of sourceFiles) hash.update(await fs.readFile(path.join(root, name)));
   for (const meta of new Map(SONG.videos.map(meta=>[meta.frameDir??meta.id,meta])).values()) {
@@ -216,8 +216,11 @@ export async function exportVideo(root, project, session, settings, job) {
   const padded = path.join(root,'workspace', `.${job.id}.tmp.wav`);
   try {
     job.phase = '封装视频与音轨'; job.progress = .88;
-    const soundArgs = [];
-    if (audio.file) {
+    const soundArgs = [], audioFilters = [];
+    if (audio.file && target <= frames) {
+      soundArgs.push('-i', localFile(root, audio.file));
+      audioFilters.push('-af', 'aresample=48000:osf=s16,apad');
+    } else if (audio.file) {
       await runProcess('ffmpeg', ['-v', 'error', '-nostdin', '-i', localFile(root, audio.file), '-af', 'aresample=48000,apad',
         '-t', String(frames / project.fps), '-c:a', 'pcm_s16le', padded], job);
       soundArgs.push('-stream_loop', '-1', '-i', padded);
@@ -225,7 +228,7 @@ export async function exportVideo(root, project, session, settings, job) {
     const ticks = timeScale / project.fps;
     job.muxDuration = duration;
     await runProcess('ffmpeg', ['-v', 'error', '-nostdin', '-progress', 'pipe:1', '-stats_period', '1', '-stream_loop', '-1', '-i', picture, ...soundArgs,
-      '-map', '0:v:0', ...(audio.file ? ['-map', '1:a:0', '-c:a', 'aac', '-b:a', '256k'] : []),
+      '-map', '0:v:0', ...(audio.file ? ['-map', '1:a:0', ...audioFilters, '-c:a', 'aac', '-b:a', '256k'] : []),
       '-c:v', 'copy', '-bsf:v', `setts=pts=N*${ticks}:dts=N*${ticks}:duration=${ticks}`, '-t', String(duration),
       '-video_track_timescale', String(timeScale), '-movie_timescale', String(timeScale), '-moov_size', String(262144 + 64 * target), pending], job);
     job.phase = '校验分辨率、帧率与音轨'; job.progress = .97;

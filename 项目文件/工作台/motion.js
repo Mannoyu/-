@@ -1,7 +1,7 @@
 import {DUR, LYRICS, SHOTS, CHORUSES} from './timeline.js';
 import {createEffects} from './effects.js';
 import {createDeck,deckState,drawCover,BACKGROUNDS} from './deck.js';
-import {createMediaSampler,createVideoElements} from './media.js';
+import {createMediaSampler} from './media.js';
 import {SONG} from './runtime-song.js';
 import {createPvLyrics} from './pv-lyrics.js';
 import {createWorld} from './world.js';
@@ -9,6 +9,9 @@ import {createPerformance} from './performance.js';
 import {createTemplateFrame} from './template-frame.js';
 import {createTemplateLyrics} from './template-lyrics.js';
 import {resolveClipScene} from './clip-editor-model.mjs';
+import {createSceneElements} from './scene-editor-runtime.js';
+import {filmstripHandoff} from './filmstrip.js';
+import {glassFilmstripHandoff} from './glass-filmstrip.js';
 const q=new URLSearchParams(location.search);
 const presentation=q.get('presentation')||'original';
 const titleLine=LYRICS.find(line=>line.kind==='title');
@@ -23,11 +26,13 @@ const esc0=t=>t.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&
 const fill={title:SONG.title,'title-upper':SONG.title.toUpperCase(),tagline:SONG.tagline,'title-artist':`${esc0(SONG.title)} <b>／</b> ${esc0(SONG.artist)}`,'artist-sub':esc0(SONG.artist)+(SONG.subtitle?` <span>／</span> ${esc0(SONG.subtitle)}`:'')};
 document.querySelectorAll('[data-song]').forEach(el=>{const v=fill[el.dataset.song];if(el.dataset.song.includes('-')&&el.dataset.song!=='title-upper')el.innerHTML=v;else el.textContent=v;});
 document.title=`${SONG.title} · 音乐壁纸`;
-const videos=createVideoElements();
 // Only the Motion Studio editor has a continuous playback clock.
 const studioFrame=window.frameElement?.id==='scene'?window.frameElement:null;
 const studioPlay=studioFrame?.ownerDocument.getElementById('play');
-const media=createMediaSampler(videos,window.parent!==window,{workbench:window.frameElement?.id==='preview'});
+const workbenchPreview=window.frameElement?.id==='preview';
+const previewEject=workbenchPreview&&SONG.elements?.cards?.cardLayout==='filmstrip';
+const glassFilmstrip=SONG.elements?.cards?.cardLayout==='glass-filmstrip';
+const media=createMediaSampler([],window.parent!==window,{workbench:workbenchPreview});
 window.prefetchExportFrame=time=>media.prefetch(time);
 let exactPreview=false;
 window.setExactPreview=value=>{exactPreview=value===true;};
@@ -51,7 +56,7 @@ const mediaSources=[];
 const bg=document.getElementById('background');
 bg.width=1920;bg.height=1080;
 const bc=bg.getContext('2d');
-const renderDeck=createDeck(mediaSources);
+const renderDeck=createDeck(mediaSources,{previewEject});
 const cover=document.getElementById('coverGroup'),halo=document.getElementById('halo');
 const lyricTrack=document.getElementById('lyricTrack');
 if(SONG.layout){
@@ -85,6 +90,8 @@ const meter=document.getElementById('meter');meter.innerHTML='<i></i>'.repeat(13
 const bars=[...meter.children];
 const renderEffects=createEffects();
 const renderWorld=createWorld(stage);
+const sceneElements=createSceneElements(SONG);
+window.sceneElementNodes=sceneElements.nodes;
 window.READY=false;
 window.DUR=DUR;
 window.motionIntensity=.75;
@@ -135,14 +142,24 @@ window.render=async t=>{
   mediaSources.splice(0,mediaSources.length,...await media.at(time,{realtime:isPlaying(),resync,exact}));
   // A pause can arrive while a correction is waiting for a decoded frame.
   if(!isPlaying())media.pause();
+  // Leave the previous frame's edited styles in place while media is decoding.
+  // Reset and reapply them in the same paint, with no await between them.
+  sceneElements.reset();
   const independent=Array.isArray(SONG.clips);
   const state=independent?resolveClipScene(SONG.clips,time):deckState(time),audio=musicAt(time);
+  const handoff=state?.raw>0?(glassFilmstrip?glassFilmstripHandoff(state.raw):previewEject?filmstripHandoff(state.raw):null):null;
+  if(handoff)state.backgroundP=handoff.background;
   const rasterScale=workbenchPlaying&&!exact?previewScale:1;
   const width=Math.round(1920*rasterScale);
   if(bg.width!==width){bg.width=width;bg.height=Math.round(1080*rasterScale);}
   cover.style.visibility=state?'visible':'hidden';
+  cover.style.opacity=state?'1':'0';
   if(independent&&state){
-    const clip=SONG.clips[state.active];cover.style.translate=`${clip.cardX}px ${clip.cardY}px`;cover.style.scale=String(clip.cardScale);
+    const clip=SONG.clips[handoff?state.from:state.active];
+    const incoming=SONG.clips[state.to];
+    const placement=key=>handoff?clip[key]+(incoming[key]-clip[key])*handoff.reveal:clip[key];
+    cover.style.translate=`${placement('cardX')}px ${placement('cardY')}px`;
+    cover.style.scale=String(placement('cardScale'));
   }
   if(state)drawBackground(state.backgroundP===1?state.to:state.from);
   else {bc.clearRect(0,0,bg.width,bg.height);bc.fillStyle='#080a0e';bc.fillRect(0,0,bg.width,bg.height);}
@@ -151,7 +168,7 @@ window.render=async t=>{
     drawBackground(state.to);
     bc.globalAlpha=1;
   }
-  if(state)renderDeck(time,state,audio,rasterScale);
+  if(state)renderDeck(time,state,rasterScale,{continuous:workbenchPlaying&&!resync});
   const accent=state?BACKGROUNDS[state.from].accent.map((a,i)=>Math.round(a+(BACKGROUNDS[state.to].accent[i]-a)*state.backgroundP)):[160,175,195];
   document.documentElement.style.setProperty('--accent',`rgb(${accent.join(',')})`);
   const {beat,energy,bass}=audio,k=window.motionIntensity;
@@ -206,11 +223,16 @@ window.render=async t=>{
   const treble=(env[9]+env[10]+env[11]+env[12])/4;
   renderEffects(time,{beat,bass:audio.bass,treble,progress,index:idx,k,lines});
   renderWorld(time);
+  if(SONG.titlePersistent){
+    const active=LYRICS[idx];
+    lyricTrack.closest('.lyrics').style.opacity=active.kind==='lyric'&&time>=active.time&&time<active.end?'1':'0';
+  }
   performance?.render(time,idx,audio);
   template?.render(time,audio);
   templateLyrics?.render(time,idx,audio);
   document.getElementById('progressFill').style.width=`${time/DUR*100}%`;
   document.getElementById('clock').textContent=clock(time);
+  sceneElements.render(time);
 };
 try{
   await initializing;

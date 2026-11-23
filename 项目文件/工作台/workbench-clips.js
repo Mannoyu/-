@@ -1,4 +1,4 @@
-import {MIN_CLIP,clipEnd,editClip,insertClip,splitClip,orderedClips,resolveClip} from './clip-editor-model.mjs';
+import {MIN_CLIP,clipEnd,editClip,insertClip,splitClip,orderedClips} from './clip-editor-model.mjs';
 
 const get=id=>document.getElementById(id);
 const round=value=>Math.round(value*60)/60;
@@ -130,14 +130,6 @@ export function createClipEditor(host){
     const peak=Math.max(.001,...wave.filter((_,i)=>i%Math.max(1,Math.floor(wave.length/2000))===0));
     for(let x=0;x<canvas.width;x+=3){const a=Math.floor(x/canvas.width*wave.length),b=Math.max(a+1,Math.floor((x+3)/canvas.width*wave.length));let value=0;for(let i=a;i<Math.min(b,wave.length);i++)value=Math.max(value,wave[i]);const h=Math.min(36,value/peak*36);ctx.fillRect(x,(36-h)/2,1.5,h);}
   }
-  function updateCardHandle(){
-    const clip=state()&&resolveClip(clips(),host.time())?.clip;
-    const frame=get('preview'),cover=frame.contentDocument?.getElementById('coverGroup');
-    const node=get('card-drag');node.hidden=!clip||!cover||cover.style.visibility==='hidden';
-    if(node.hidden)return;
-    const rect=cover.getBoundingClientRect();
-    Object.assign(node.style,{left:`${rect.x}px`,top:`${rect.y}px`,width:`${rect.width}px`,height:`${rect.height}px`});
-  }
   function bind(){
     for(const [id,fn] of [['split-clip',split],['delete-clip',remove],['clip-delete-property',remove]])get(id).addEventListener('click',()=>run(fn));
     get('clip-snap').addEventListener('click',()=>{snap=!snap;get('clip-snap').setAttribute('aria-pressed',String(snap));});
@@ -161,32 +153,6 @@ export function createClipEditor(host){
     });
     resize.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown'].includes(event.key)){event.preventDefault();document.documentElement.style.setProperty('--timeline-height',`${clamp(document.querySelector('.timeline').clientHeight+(event.key==='ArrowUp'?24:-24),230,520)}px`);}});
     new ResizeObserver(()=>{if(state()&&!dragging){host.paintTimeline();}}).observe(get('timeline-scroll'));
-    const card=get('card-drag');
-    card.addEventListener('pointerdown',event=>{
-      const active=resolveClip(clips(),host.time());if(!active||event.button!==0)return;
-      event.preventDefault();host.pause();select(active.clip.id);
-      const original=structuredClone(active.clip),x=event.clientX,y=event.clientY,scale=get('monitor-surface').clientWidth/1920;
-      const cover=get('preview').contentDocument.getElementById('coverGroup');let candidate=original,changed=false;
-      card.setPointerCapture(event.pointerId);card.classList.add('dragging');
-      const move=e=>{
-        const dx=(e.clientX-x)/scale,dy=(e.clientY-y)/scale;changed||=Math.abs(dx)+Math.abs(dy)>3;
-        candidate={...original,cardX:Math.round(clamp(original.cardX+dx,-500,500)),cardY:Math.round(clamp(original.cardY+dy,-500,500))};
-        cover.style.translate=`${candidate.cardX}px ${candidate.cardY}px`;updateCardHandle();
-        get('clip-card-x').value=candidate.cardX;get('clip-card-y').value=candidate.cardY;
-      };
-      const finish=e=>{
-        card.removeEventListener('pointermove',move);card.removeEventListener('pointerup',finish);card.removeEventListener('pointercancel',cancel);card.classList.remove('dragging');
-        if(card.hasPointerCapture(e.pointerId))card.releasePointerCapture(e.pointerId);
-        if(changed)run(()=>patch({cardX:candidate.cardX,cardY:candidate.cardY}));
-      };
-      const cancel=e=>{changed=false;cover.style.translate=`${original.cardX}px ${original.cardY}px`;finish(e);updateCardHandle();host.paintSlot();};
-      card.addEventListener('pointermove',move);card.addEventListener('pointerup',finish);card.addEventListener('pointercancel',cancel);
-    });
-    card.addEventListener('keydown',event=>{
-      if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;
-      const active=resolveClip(clips(),host.time());if(!active)return;event.preventDefault();select(active.clip.id);
-      const step=event.shiftKey?10:1;run(()=>patch({cardX:clamp(active.clip.cardX+(event.key==='ArrowLeft'?-step:event.key==='ArrowRight'?step:0),-500,500),cardY:clamp(active.clip.cardY+(event.key==='ArrowUp'?-step:event.key==='ArrowDown'?step:0),-500,500)}));
-    });
   }
-  return {paintTrack,paintWave,loadWave,add,patch,selected,bind,updateCardHandle};
+  return {paintTrack,paintWave,loadWave,add,patch,selected,bind};
 }
